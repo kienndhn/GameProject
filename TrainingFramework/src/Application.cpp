@@ -17,7 +17,7 @@ Application::~Application()
 
 void Application::Init()
 {
-	glClearColor(0.9f, 1.0f, 1.0f, 0.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	GameStateMachine::GetInstance()->PushState(StateTypes::STATE_Intro);
 }
 
