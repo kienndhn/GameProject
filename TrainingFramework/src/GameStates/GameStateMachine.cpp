@@ -54,8 +54,9 @@ void GameStateMachine::PopState()
 {
 	// cleanup the current state
 	if (!m_StatesStack.empty()) {
-		m_StatesStack.back()->Exit();
-		m_StatesStack.pop_back();
+		m_pActiveState = m_StatesStack.back();
+		m_StatesStack.back()->Exit(); 
+	    m_StatesStack.pop_back();
 	}
 
 	// resume previous state

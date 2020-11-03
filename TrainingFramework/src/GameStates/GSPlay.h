@@ -2,9 +2,12 @@
 #include "gamestatebase.h"
 #include "GameButton.h"
 
+
 class Sprite2D;
 class Sprite3D;
 class Text;
+class SpriteAnimation;
+
 
 class GSPlay :
 	public GameStateBase
@@ -34,6 +37,7 @@ private:
 	std::shared_ptr<Sprite2D> m_BackGround;
 	std::shared_ptr<Text>  m_score;
 	std::list<std::shared_ptr<GameButton>>	m_listButton;
-
+	std::vector < std::shared_ptr<SpriteAnimation>> m_listSpriteAnimations;
+	std::vector < std::shared_ptr<Sprite2D>> m_listSprite2D;
 };
 

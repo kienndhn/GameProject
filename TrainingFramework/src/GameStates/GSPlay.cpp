@@ -36,13 +36,15 @@ void GSPlay::Init()
 	m_BackGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
 	m_BackGround->SetSize(screenWidth, screenHeight);
 
-	//return menu button
-	texture = ResourceManagers::GetInstance()->GetTexture("button_exit_game");
+	
+	
+	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth *3/4, 30);
-	button->SetSize(200, 50);
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(240, 50);
+	button->SetSize(100, 50);
 	button->SetOnClick([]() {
-		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Menu);
+		GameStateMachine::GetInstance()->PopState();
 	});
 	m_listButton.push_back(button);
 
@@ -52,7 +54,13 @@ void GSPlay::Init()
 	m_score = std::make_shared< Text>(shader, font, "score: 10", TEXT_COLOR::RED, 1.0);
 	m_score->Set2DPosition(Vector2(5, 25));
 
-	
+	//animation
+	shader = ResourceManagers::GetInstance()->GetShader("Animation");
+	texture = ResourceManagers::GetInstance()->GetTexture("play_run");
+	std::shared_ptr<SpriteAnimation> obj = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.3f);
+	obj->Set2DPosition(240, 180);
+	obj->SetSize(32, 32);
+	m_listSpriteAnimations.push_back(obj);
 }
 
 void GSPlay::Exit()
@@ -93,6 +101,10 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	for (auto obj : m_listSpriteAnimations)
+	{
+		obj->Update(deltaTime);
+	}
 }
 
 void GSPlay::Draw()
@@ -102,6 +114,10 @@ void GSPlay::Draw()
 	for (auto it : m_listButton)
 	{
 		it->Draw();
+	}
+	for (auto obj : m_listSpriteAnimations)
+	{
+		obj->Draw();
 	}
 }
 
