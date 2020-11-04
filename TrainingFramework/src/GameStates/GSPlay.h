@@ -1,7 +1,7 @@
 #pragma once
 #include "gamestatebase.h"
 #include "GameButton.h"
-
+#include "Player"
 
 class Sprite2D;
 class Sprite3D;
