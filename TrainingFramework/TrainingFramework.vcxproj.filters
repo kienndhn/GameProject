@@ -69,7 +69,7 @@
     <ClCompile Include="src\GameObject\GameButton.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Downloads\Documents\GAME\Programming_anim\Programming_anim\TrainingFramework\src\GameObject\SpriteAnimation.cpp">
+    <ClCompile Include="src\GameObject\SpriteAnimation.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,7 +131,7 @@
     <ClInclude Include="src\GameObject\GameButton.h">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Downloads\Documents\GAME\Programming_anim\Programming_anim\TrainingFramework\src\GameObject\SpriteAnimation.h">
+    <ClInclude Include="src\GameObject\SpriteAnimation.h">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClInclude>
   </ItemGroup>
