@@ -8,6 +8,7 @@ class Sprite3D;
 class Text;
 class SpriteAnimation;
 class Player;
+class Opossum;
 
 class GSPlay :
 	public GameStateBase
@@ -40,5 +41,6 @@ private:
 	std::vector < std::shared_ptr<SpriteAnimation>> m_listSpriteAnimations;
 	std::vector < std::shared_ptr<Sprite2D>> m_listSprite2D;
 	std::shared_ptr<Player> m_Player;
+	std::shared_ptr<Opossum> m_Opossum;
 };
 

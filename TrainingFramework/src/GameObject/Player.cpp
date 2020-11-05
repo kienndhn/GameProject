@@ -4,7 +4,7 @@
 Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture)
 	: Sprite2D(model, shader, texture)
 {
-	
+	m_xSpeed = 100;
 	m_isRight = true;
 	shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_idle");
@@ -20,6 +20,7 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 	m_pRunLeft = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
 	m_pRunLeft->SetSize(52, 52);
 	m_pAnimation = m_pIdle;
+	
 }
 
 Player::~Player()
@@ -31,19 +32,19 @@ void Player::HandleKeyEvents(GLbyte key, bool bIsPressed)
 {
 	if (!bIsPressed) {
 		Idle();
-		speed = 0;
+		xspeed = 0;
 	}
 	else {
 		switch(key){
 		case KEY_RIGHT:
 			m_isRight = true;
 			Run();
-			speed = -100;
+			xspeed = -m_xSpeed;
 			break;
 		case KEY_LEFT:	
 			m_isRight = false;
 			Run();
-			speed = 100;
+			xspeed = m_xSpeed;
 			break;
 		}
 			
@@ -73,5 +74,5 @@ void Player::Idle() {
 
 void Player::Update(GLfloat deltatime)
 {	
-
+	m_pAnimation->Set2DPosition(240, 240);
 }

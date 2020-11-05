@@ -2,10 +2,10 @@
 #include "Shaders.h"
 #include "Application.h"
 #include "utilities.h" 
-
+#include "vld.h"
 GLint screenWidth = 480;
 GLint screenHeight = 320;
-GLint speed = 100;
+GLint xspeed = 100;
 
 GLint Init(ESContext* esContext)
 {

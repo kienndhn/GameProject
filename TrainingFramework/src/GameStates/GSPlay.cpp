@@ -10,10 +10,11 @@
 #include "Text.h"
 #include "SpriteAnimation.h"
 #include "Player.h"
+#include "Opossum.h"
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
-extern int speed;
+extern int xspeed;
 
 GSPlay::GSPlay()
 {
@@ -28,7 +29,7 @@ GSPlay::~GSPlay()
 
 void GSPlay::Init()
 {
-	speed = 0;
+	xspeed = 0;
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("back");
 
@@ -56,14 +57,10 @@ void GSPlay::Init()
 	m_Player = std::make_shared<Player>(model, shader, texture);
 	
 
-	// Animation
-	/*shader = ResourceManagers::GetInstance()->GetShader("Animation");
-	texture = ResourceManagers::GetInstance()->GetTexture("player_run");
-	std::shared_ptr<SpriteAnimation> obj = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
-	obj->Set2DPosition(120, 120);
-	obj->SetSize(52, 52);
-	m_listSpriteAnimations.push_back(obj);
-*/
+	//new Opossum
+	m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 1.5, screenHeight / 2);
+
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
@@ -123,9 +120,11 @@ void GSPlay::Update(float deltaTime)
 
 	m_Player->Update(deltaTime);
 
+	
+
 	for (auto bg : m_listBackGround) {
 		Vector2 pos = bg->Get2DPosition();
-		pos.x = pos.x + speed * deltaTime;
+		pos.x = pos.x + xspeed * deltaTime;
 		
 		if (pos.x < -screenWidth / 2 + 1) {
 			pos.x = screenWidth * 1.5 - 1;
@@ -139,7 +138,8 @@ void GSPlay::Update(float deltaTime)
 	}
 
 	m_Player->GetAnimation()->Update(deltaTime);
-
+	m_Opossum->GetAnimation()->Update(deltaTime);
+	m_Opossum->Update(deltaTime);
 }
 
 void GSPlay::Draw()
@@ -151,6 +151,8 @@ void GSPlay::Draw()
 	}
 
 	m_Player->GetAnimation()->Draw();
+
+	m_Opossum->GetAnimation()->Draw();
 
 	for (auto obj : m_listButton)
 	{

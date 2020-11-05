@@ -3,7 +3,7 @@
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";
 
-extern int speed;
+extern int xspeed;
 class Player : public Sprite2D
 {
 
@@ -18,11 +18,14 @@ public:
 		return m_pAnimation;
 	}
 	void Update(GLfloat deltatime);
-
+	int GetXSpeed() {
+		return m_xSpeed;
+	}
 private:
 	void(*m_pKeyPreesed)();
 	bool m_isKeyPressed;
 	bool m_isRight;
+	int m_xSpeed;
 	std::shared_ptr<SpriteAnimation> m_pAnimation;
 	std::shared_ptr<SpriteAnimation> m_pRun;
 	std::shared_ptr<SpriteAnimation> m_pIdle;
