@@ -9,7 +9,7 @@
 #include "Sprite3D.h"
 #include "Text.h"
 #include "SpriteAnimation.h"
-
+#include "Player.h"
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -43,14 +43,18 @@ void GSPlay::Init()
 	m_score = std::make_shared< Text>(shader, font, "score: 10", TEXT_COLOR::RED, 1.0);
 	m_score->Set2DPosition(Vector2(5, 25));
 
+	//
+	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+	std::shared_ptr<Player> player = std::make_shared<Player>(model, shader, texture);
+	m_listSpriteAnimations.push_back(player->GetAnimation());
 	// Animation
-	shader = ResourceManagers::GetInstance()->GetShader("Animation");
+	/*shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_run");
 	std::shared_ptr<SpriteAnimation> obj = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
 	obj->Set2DPosition(120, 120);
 	obj->SetSize(52, 52);
 	m_listSpriteAnimations.push_back(obj);
-
+*/
 	 
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");

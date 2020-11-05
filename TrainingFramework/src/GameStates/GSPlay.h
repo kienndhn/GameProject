@@ -7,7 +7,7 @@ class Sprite2D;
 class Sprite3D;
 class Text;
 class SpriteAnimation;
-
+class Player;
 
 class GSPlay :
 	public GameStateBase
