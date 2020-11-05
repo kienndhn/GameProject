@@ -3,9 +3,9 @@
 #include "Application.h"
 #include "utilities.h" 
 
-GLint screenWidth = 320;
-GLint screenHeight = 480;
-
+GLint screenWidth = 480;
+GLint screenHeight = 320;
+GLint speed = 100;
 
 GLint Init(ESContext* esContext)
 {

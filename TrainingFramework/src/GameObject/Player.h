@@ -3,10 +3,9 @@
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";
 
+extern int speed;
 class Player : public Sprite2D
 {
-
-
 
 public:
 	Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture);
@@ -20,14 +19,14 @@ public:
 	}
 	void Update(GLfloat deltatime);
 
-	
-	
 private:
-
 	void(*m_pKeyPreesed)();
 	bool m_isKeyPressed;
+	bool m_isRight;
 	std::shared_ptr<SpriteAnimation> m_pAnimation;
 	std::shared_ptr<SpriteAnimation> m_pRun;
 	std::shared_ptr<SpriteAnimation> m_pIdle;
+	std::shared_ptr<SpriteAnimation> m_pRunLeft;
+	std::shared_ptr<SpriteAnimation> m_pIdleLeft;
 };
 
