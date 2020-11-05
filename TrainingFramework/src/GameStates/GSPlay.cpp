@@ -45,8 +45,8 @@ void GSPlay::Init()
 
 	//
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
-	std::shared_ptr<Player> player = std::make_shared<Player>(model, shader, texture);
-	m_listSpriteAnimations.push_back(player->GetAnimation());
+	m_Player = std::make_shared<Player>(model, shader, texture);
+	
 	// Animation
 	/*shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_run");
@@ -55,7 +55,6 @@ void GSPlay::Init()
 	obj->SetSize(52, 52);
 	m_listSpriteAnimations.push_back(obj);
 */
-	 
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
@@ -93,7 +92,8 @@ void GSPlay::HandleEvents()
 
 void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 {
-
+	
+	m_Player->HandleKeyEvents(key, bIsPressed);
 }
 
 void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
@@ -103,6 +103,7 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 		(it)->HandleTouchEvents(x, y, bIsPressed);
 		if ((it)->IsHandle()) break;
 	}
+	printf("click");
 }
 
 void GSPlay::Update(float deltaTime)
@@ -111,10 +112,15 @@ void GSPlay::Update(float deltaTime)
 	{
 		it->Update(deltaTime);
 	}
+
+	m_Player->Update(deltaTime);
+
 	for (auto obj : m_listSpriteAnimations)
 	{
 		obj->Update(deltaTime);
 	}
+
+	m_Player->GetAnimation()->Update(deltaTime);
 }
 
 void GSPlay::Draw()
@@ -126,6 +132,7 @@ void GSPlay::Draw()
 		obj->Draw();
 	}
 
+	m_Player->GetAnimation()->Draw();
 	for (auto obj : m_listButton)
 	{
 		obj->Draw();
