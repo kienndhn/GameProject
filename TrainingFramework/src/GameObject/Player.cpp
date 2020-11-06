@@ -4,7 +4,7 @@
 Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture)
 	: Sprite2D(model, shader, texture)
 {
-	m_xSpeed = 100;
+	m_xSpeed = 150;
 	m_isRight = true;
 	shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_idle");

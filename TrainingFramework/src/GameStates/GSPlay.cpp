@@ -139,6 +139,7 @@ void GSPlay::Update(float deltaTime)
 
 	m_Player->GetAnimation()->Update(deltaTime);
 	m_Opossum->GetAnimation()->Update(deltaTime);
+	m_Opossum->Detect(m_Player);
 	m_Opossum->Update(deltaTime);
 }
 
