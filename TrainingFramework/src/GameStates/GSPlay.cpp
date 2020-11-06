@@ -23,7 +23,7 @@ GSPlay::GSPlay()
 
 GSPlay::~GSPlay()
 {
-
+	
 }
 
 
@@ -58,9 +58,9 @@ void GSPlay::Init()
 	
 
 	//new Opossum
-	m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+	std::shared_ptr<Opossum> m_Opossum = std::make_shared<Opossum>(model, shader, texture);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 1.5, screenHeight / 2);
-
+	m_listOpossum.push_back(m_Opossum);
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
@@ -138,9 +138,18 @@ void GSPlay::Update(float deltaTime)
 	}
 
 	m_Player->GetAnimation()->Update(deltaTime);
-	m_Opossum->GetAnimation()->Update(deltaTime);
-	m_Opossum->Detect(m_Player);
-	m_Opossum->Update(deltaTime);
+	for (auto opossum : m_listOpossum) {
+		//if (opossum->GetAcvite() == false) {
+		//	//m_listOpossum.pop_back();
+		//}
+		//else {
+			opossum->GetAnimation()->Update(deltaTime);
+			opossum->Detect(m_Player);
+			opossum->Update(deltaTime);
+		//}
+		
+	}
+	
 }
 
 void GSPlay::Draw()
@@ -153,7 +162,9 @@ void GSPlay::Draw()
 
 	m_Player->GetAnimation()->Draw();
 
-	m_Opossum->GetAnimation()->Draw();
+	for (auto opossum : m_listOpossum) {
+		opossum->GetAnimation()->Draw();
+	}
 
 	for (auto obj : m_listButton)
 	{

@@ -16,6 +16,7 @@ Opossum::Opossum(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader,
 	texture = ResourceManagers::GetInstance()->GetTexture("opossum_right");
 	m_pRight = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
 	m_pRight->SetSize(54, 42);
+
 	m_pAnimation = m_pLeft;
 }
 
@@ -28,14 +29,19 @@ void Opossum::Update(GLfloat deltatime) {
 	
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	
+	if (m_Direction >= 0) {
+		m_pAnimation = m_pLeft;
+	}
+	else {
+		m_pAnimation = m_pRight;
+	}
 
 	if (m_isActive) {
 		pos.x = pos.x - deltatime * (m_xSpeed * m_Direction - xspeed);
 	}
 	else {
 		pos.x = pos.x + deltatime * xspeed;
-	}
-	
+	}	
 	GetAnimation()->Set2DPosition(pos);
 }
 
@@ -49,17 +55,11 @@ void Opossum::Detect(std::shared_ptr<Player> player)
 	if (m_xDistance != 0) {
 		m_Direction = m_xDistance / abs(m_xDistance);
 	}
-	if (m_Direction >= 0) {
-		m_pAnimation = m_pLeft;
-	}
-	else {
-		m_pAnimation = m_pRight;
-	}
+	
 	if (abs(m_xDistance) < screenWidth / 2) {
 		m_isActive = true;
 	}
 	else {
 		m_isActive = false;
 	}
-
 }
