@@ -2,7 +2,7 @@
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";
 #include "Player.h"
-#include "Enemy.h"
+//#include "Enemy.h"
 #include <math.h>
 
 extern int speed;

@@ -75,7 +75,7 @@
     <ClCompile Include="src\GameObject\Player.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="Opossum.cpp">
+    <ClCompile Include="src\GameObject\Opossum.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
