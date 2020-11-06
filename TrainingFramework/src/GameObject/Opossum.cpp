@@ -4,7 +4,7 @@ extern int screenWidth; //need get on Graphic engine
 extern int screenHeight;
 extern int xspeed;
 Opossum::Opossum(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture)
-	: Sprite2D(model, shader, texture)
+	: Enemy(model, shader, texture)
 {
 	m_xDistance = 1000;
 	m_xSpeed = 100;

@@ -2,12 +2,12 @@
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";
 #include "Player.h"
-//#include "Enemy.h"
+#include "Enemy.h"
 #include <math.h>
 
 extern int speed;
 
-class Opossum : public Sprite2D
+class Opossum : public Enemy
 {
 
 public:
