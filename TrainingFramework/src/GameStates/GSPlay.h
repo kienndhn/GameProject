@@ -1,7 +1,7 @@
 #pragma once
 #include "gamestatebase.h"
 #include "GameButton.h"
-
+#include "Ground.h"
 
 class Sprite2D;
 class Sprite3D;
@@ -9,7 +9,7 @@ class Text;
 class SpriteAnimation;
 class Player;
 class Opossum;
-class Enemy;
+class Ground;
 
 class GSPlay :
 	public GameStateBase
@@ -33,6 +33,7 @@ public:
 
 	
 	void SetNewPostionForBullet();
+	void checkFlagform
 
 private:
 
@@ -42,6 +43,7 @@ private:
 	std::vector < std::shared_ptr<SpriteAnimation>> m_listSpriteAnimations;
 	std::vector < std::shared_ptr<Sprite2D>> m_listSprite2D;
 	std::shared_ptr<Player> m_Player;
-	std::list<std::shared_ptr<Enemy>> m_listOpossum;
+	std::list<std::shared_ptr<Opossum>> m_listOpossum;
+	std::list<std::shared_ptr<Ground>> m_listGround;
 };
 

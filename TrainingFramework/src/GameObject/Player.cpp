@@ -5,6 +5,7 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 	: Sprite2D(model, shader, texture)
 {
 	m_xSpeed = 150;
+	m_ySpeed = 150;
 	m_isRight = true;
 	shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_idle");
@@ -74,5 +75,5 @@ void Player::Idle() {
 
 void Player::Update(GLfloat deltatime)
 {	
-	m_pAnimation->Set2DPosition(240, 240);
+	m_pAnimation->Set2DPosition(240, 213);
 }

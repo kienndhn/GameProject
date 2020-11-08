@@ -1,8 +1,7 @@
 #pragma once
 #include "Sprite2D.h"
-class Flatform :
+class FlatForm :
 	public Sprite2D
 {
-
 };
 

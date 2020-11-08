@@ -26,6 +26,7 @@ private:
 	bool m_isKeyPressed;
 	bool m_isRight;
 	int m_xSpeed;
+	int m_ySpeed;
 	std::shared_ptr<SpriteAnimation> m_pAnimation;
 	std::shared_ptr<SpriteAnimation> m_pRun;
 	std::shared_ptr<SpriteAnimation> m_pIdle;
