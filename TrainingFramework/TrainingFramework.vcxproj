@@ -260,6 +260,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Flatform.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\GameManager\ResourceManagers.cpp" />
     <ClCompile Include="src\GameObject\Enemy.cpp" />
@@ -284,6 +285,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Flatform.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\GameConfig.h" />
     <ClInclude Include="src\GameManager\ResourceManagers.h" />

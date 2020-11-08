@@ -20,7 +20,7 @@ public:
 	bool GetAcvite() {
 		return m_isActive;
 	}
-	void Update(GLfloat deltatime);
+	virtual void Update(GLfloat deltatime) =0;
 
 	void Detect(std::shared_ptr<Player> player);
 private:

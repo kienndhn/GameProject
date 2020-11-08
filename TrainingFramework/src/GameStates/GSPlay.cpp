@@ -16,6 +16,8 @@ extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
 extern int xspeed;
 
+std::shared_ptr<Sprite2D> bg1;
+
 GSPlay::GSPlay()
 {
 }
@@ -36,15 +38,19 @@ void GSPlay::Init()
 	//BackGround
 	//BackGround
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
-	std::shared_ptr<Sprite2D> bg1 = std::make_shared<Sprite2D>(model, shader, texture);
-	bg1->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	std::shared_ptr<Sprite2D> bg = std::make_shared<Sprite2D>(model, shader, texture);
+	bg->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	bg->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(bg);
+	
+	bg = std::make_shared<Sprite2D>(model, shader, texture);
+	bg->Set2DPosition(screenWidth * 1.5 - 1, screenHeight / 2);
+	bg->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(bg);
+	
+	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(screenWidth * 0.5f, screenHeight / 2);
 	bg1->SetSize(screenWidth, screenHeight);
-	m_listBackGround.push_back(bg1);
-	std::shared_ptr<Sprite2D> bg2 = std::make_shared<Sprite2D>(model, shader, texture);
-	bg2->Set2DPosition(screenWidth * 1.5 - 1, screenHeight / 2);
-	bg2->SetSize(screenWidth, screenHeight);
-	m_listBackGround.push_back(bg2);
-
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -58,12 +64,17 @@ void GSPlay::Init()
 	
 
 	//new Opossum
-	std::shared_ptr<Opossum> m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+    std::shared_ptr<Opossum> m_Opossum = std::make_shared<Opossum>(model, shader, texture);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 1.5, screenHeight / 2);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 2.0, screenHeight / 2);
 	m_listOpossum.push_back(m_Opossum);
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
+	
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(450, 25);
@@ -112,6 +123,7 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	bg1->Update(deltaTime);
 
 	for (auto it : m_listButton)
 	{
@@ -126,27 +138,23 @@ void GSPlay::Update(float deltaTime)
 		Vector2 pos = bg->Get2DPosition();
 		pos.x = pos.x + xspeed * deltaTime;
 		
-		if (pos.x < -screenWidth / 2 + 1) {
-			pos.x = screenWidth * 1.5 - 1;
+		if (pos.x < -screenWidth / 2.0) {
+			pos.x = screenWidth * 1.5;
 			printf("reset\n");
 		}
-		else if (pos.x > screenWidth * 1.5 - 1 ) {
-			pos.x = -screenWidth * 0.5 + 1;
+		else if (pos.x > screenWidth * 1.5) {
+			pos.x = -screenWidth * 0.5;
 			printf("reset\n");
 		}
 		bg->Set2DPosition(pos);
 	}
-
 	m_Player->GetAnimation()->Update(deltaTime);
 	for (auto opossum : m_listOpossum) {
-		//if (opossum->GetAcvite() == false) {
-		//	//m_listOpossum.pop_back();
-		//}
-		//else {
+		
 			opossum->GetAnimation()->Update(deltaTime);
 			opossum->Detect(m_Player);
 			opossum->Update(deltaTime);
-		//}
+		
 		
 	}
 	
@@ -154,7 +162,8 @@ void GSPlay::Update(float deltaTime)
 
 void GSPlay::Draw()
 {
-	
+	bg1->Draw();
+
 	for (auto obj : m_listBackGround)
 	{
 		obj->Draw();

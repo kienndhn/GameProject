@@ -56,7 +56,7 @@ void Opossum::Detect(std::shared_ptr<Player> player)
 		m_Direction = m_xDistance / abs(m_xDistance);
 	}
 	
-	if (abs(m_xDistance) < screenWidth / 2) {
+	if (abs(m_xDistance) - 27 < screenWidth / 2 ) {
 		m_isActive = true;
 	}
 	else {

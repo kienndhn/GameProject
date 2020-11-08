@@ -9,9 +9,7 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::Update(GLfloat deltatime) {
 
-}
 void Enemy::Detect(std::shared_ptr<Player> player)
 {
 }
