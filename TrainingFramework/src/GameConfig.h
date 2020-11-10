@@ -90,7 +90,7 @@
 #define KEY_MOVE_RIGHT			68	// key d
 #define KEY_MOVE_FORWORD		87	// key w
 #define KEY_MOVE_BACKWORD		83	// key s
-
+#define KEY_SPACE				32  // key space
 #elif ANDROID
 
 #define KEY_BACK				27	// key Esc

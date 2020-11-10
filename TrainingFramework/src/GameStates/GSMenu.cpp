@@ -2,7 +2,7 @@
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
-extern int xspeed;
+extern int xSpeed;
 
 GSMenu::GSMenu()
 {
@@ -99,7 +99,7 @@ void GSMenu::Update(float deltaTime)
 {
 	for (auto bg : m_listBackGround) {
 		Vector2 pos = bg->Get2DPosition();
-		pos.x = pos.x - xspeed * deltaTime;
+		pos.x = pos.x - 100 * deltaTime;
 		if (pos.x < -screenWidth / 2 + 10) {
 			pos.x = screenWidth * 1.5;
 		}

@@ -14,8 +14,10 @@
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
-extern int xspeed;
-int yspeed;
+extern int xSpeed;
+extern int ySpeed;
+extern int g;
+
 std::shared_ptr<Sprite2D> bg1;
 
 GSPlay::GSPlay()
@@ -25,13 +27,16 @@ GSPlay::GSPlay()
 
 GSPlay::~GSPlay()
 {
-	
+	for (auto op : m_listOpossum) {
+		delete op;
+	}
+
 }
 
 
 void GSPlay::Init()
 {
-	xspeed = 0;
+	xSpeed = 0;
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("back");
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
@@ -39,17 +44,17 @@ void GSPlay::Init()
 	
 	std::shared_ptr<Sprite2D> bg = std::make_shared<Sprite2D>(model, shader, texture);
 	bg->Set2DPosition(screenWidth * 0.5, screenHeight / 2);
-	bg->SetSize(screenWidth * 2, screenHeight * 2);
+	bg->SetSize(screenWidth , screenHeight );
 	m_listBackGround.push_back(bg);
 	
 	bg = std::make_shared<Sprite2D>(model, shader, texture);
-	bg->Set2DPosition(screenWidth * 2.5 *  - 1, screenHeight / 2);
-	bg->SetSize(screenWidth * 2, screenHeight * 2);
+	bg->Set2DPosition(screenWidth * 1.5  - 1, screenHeight / 2);
+	bg->SetSize(screenWidth, screenHeight );
 	m_listBackGround.push_back(bg);
 	
 	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
 	bg1->Set2DPosition(screenWidth * 0.5f, screenHeight / 2);
-	bg1->SetSize(screenWidth * 2, screenHeight * 2);
+	bg1->SetSize(screenWidth , screenHeight);
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -63,22 +68,28 @@ void GSPlay::Init()
 	
 
 	//new Opossum
-    std::shared_ptr<Opossum> m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+    Opossum* m_Opossum = new Opossum(model);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 1.5, screenHeight / 2);
 	m_listOpossum.push_back(m_Opossum);
 
-	m_Opossum = std::make_shared<Opossum>(model, shader, texture);
+	m_Opossum = new Opossum(model);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 2.0, screenHeight / 2);
 	m_listOpossum.push_back(m_Opossum);
 
 	//ground
 	
-	shader= shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("ground");
 	std::shared_ptr<Ground> m_Ground = std::make_shared<Ground>(model,shader, texture);
 	m_Ground->Set2DPosition(screenWidth/2, 280);
 	m_Ground->SetSize(336, 80);
-	m_listGround.push_back(m_Ground);
+	m_listFlatform.push_back(m_Ground);
+	m_Ground = std::make_shared<Ground>(model, shader, texture);
+	m_Ground->Set2DPosition(screenWidth / 2 + 400, 280);
+	m_Ground->SetSize(336, 80);
+	m_listFlatform.push_back(m_Ground);
+
+	
 
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("button_back");
@@ -90,7 +101,7 @@ void GSPlay::Init()
 		GameStateMachine::GetInstance()->PopState();
 	});
 	m_listButton.push_back(button);
-
+	
 	
 }
 
@@ -113,7 +124,40 @@ void GSPlay::Resume()
 
 void GSPlay::HandleEvents()
 {
+	for (auto gr : m_listFlatform) {
+		Vector2 pos = gr->Get2DPosition();
+		if (gr->GetIsInScreen()) {
+			m_Player->CheckFlatform(gr);
+			if (!m_Player->GetInAir()) {
+				break;
+			}
+		}
+	}
+	/*for (auto gr : m_listFlatform) {
+		Vector2 pos = gr->Get2DPosition();
+		if (gr->GetIsInScreen()) {
+			for (auto op : m_listOpossum) {
+				if (op->GetAcvite()) {
+					op->CheckFlatform(gr);
+				}
+			}
+		}
+	}*/
 
+	for (auto op : m_listOpossum) {
+		if (op->GetAcvite()) {
+			printf("chay ne\n");
+			for (auto gr : m_listFlatform) {
+				Vector2 pos = gr->Get2DPosition();
+				if (gr->GetIsInScreen()) {
+					op->CheckFlatform(gr);
+					if (!op->GetInAir()) {
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
@@ -133,10 +177,14 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
-	for (auto gr : m_listGround) {
-		
-		gr->Update(deltaTime);
+	for (auto gr : m_listFlatform) {
+		Vector2 pos = gr->Get2DPosition();
+		pos.x = pos.x + xSpeed * deltaTime;
 
+		gr->Set2DPosition(pos);
+		gr->CheckInScreen();
+		gr->Update(deltaTime);
+		
 	}
 
 	bg1->Update(deltaTime);
@@ -152,29 +200,25 @@ void GSPlay::Update(float deltaTime)
 
 	for (auto bg : m_listBackGround) {
 		Vector2 pos = bg->Get2DPosition();
-		pos.x = pos.x + xspeed * deltaTime;
+		pos.x = pos.x + xSpeed * deltaTime;
 		
-		if (pos.x < -screenWidth *1.5) {
-			pos.x = screenWidth * 2.5;
+		if (pos.x < -screenWidth * 0.5) {
+			pos.x = screenWidth * 1.5;
 			printf("reset\n");
 		}
-		else if (pos.x > screenWidth * 2.5) {
-			pos.x = -screenWidth * -1.5;
+		else if (pos.x > screenWidth * 1.5) {
+			pos.x = -screenWidth * 0.5;
 			printf("reset\n");
 		}
 		bg->Set2DPosition(pos);
 	}
 	m_Player->GetAnimation()->Update(deltaTime);
-	for (auto opossum : m_listOpossum) {
-		
+	for (auto opossum : m_listOpossum) {		
 			opossum->GetAnimation()->Update(deltaTime);
 			opossum->Detect(m_Player);
-			opossum->Update(deltaTime);
-		
-		
-	}
-	
-	
+			opossum->Update(deltaTime);		
+	}	
+	HandleEvents();
 }
 
 void GSPlay::Draw()
@@ -187,21 +231,22 @@ void GSPlay::Draw()
 		obj->Draw();
 	}
 
-	m_Player->GetAnimation()->Draw();
+	for (auto obj : m_listButton)
+	{
+		obj->Draw();
+	}
+	for (auto gr : m_listFlatform) {
+
+		gr->Draw();
+
+	}
 
 	for (auto opossum : m_listOpossum) {
 		opossum->GetAnimation()->Draw();
 	}
 
-	for (auto obj : m_listButton)
-	{
-		obj->Draw();
-	}
-	for (auto gr : m_listGround) {
+	m_Player->GetAnimation()->Draw();
 
-		gr->Draw();
-
-	}
 	m_score->Draw();
 }
 

@@ -5,8 +5,9 @@
 #include "vld.h"
 GLint screenWidth = 480;
 GLint screenHeight = 320;
-GLint xspeed = 100;
-
+GLint xSpeed = 100;
+GLint ySpeed = 0;
+GLint g = 9;
 GLint Init(ESContext* esContext)
 {
 	Application::GetInstance()->Init();
