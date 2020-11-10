@@ -130,6 +130,11 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 	else m_isInAir = true;
 }
 
+void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
+{
+
+}
+
 void Player::Move(GLfloat deltatime)
 {
 	if (m_ySpeed > 0) {

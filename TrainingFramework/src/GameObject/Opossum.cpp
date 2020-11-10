@@ -83,6 +83,7 @@ void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
 		m_vPosition.y = fPos.y - 0.5 * fSize.y - 27;
 		m_isInAir = false;
 	}
+
 	else m_isInAir = true;
 
 }
@@ -112,7 +113,5 @@ void Opossum::Move(GLfloat deltatime)
 	}
 	else {
 		m_vPosition.x = m_vPosition.x + deltatime * xSpeed;
-	}
-
-	
+	}	
 }

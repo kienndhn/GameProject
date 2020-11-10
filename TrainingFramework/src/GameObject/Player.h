@@ -3,6 +3,7 @@
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";
 #include "FlatForm.h"
+#include "Opossum.h"
 
 class Flatform;
 extern int xSpeed;
@@ -42,7 +43,8 @@ public:
 		return m_isInAir;
 	}
 
-	 
+	void CheckCollision(std::shared_ptr<Opossum> opossum);
+
 private:
 	
 	void(*m_pKeyPreesed)();

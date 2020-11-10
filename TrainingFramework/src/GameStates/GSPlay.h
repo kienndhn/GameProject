@@ -56,7 +56,7 @@ private:
 	
 	std::shared_ptr<Player> m_Player;
 	
-	std::list<Opossum*> m_listOpossum;
+	std::list< std::shared_ptr<Opossum>> m_listOpossum;
 	
 	std::list<std::shared_ptr<Flatform>> m_listFlatform;
 };
