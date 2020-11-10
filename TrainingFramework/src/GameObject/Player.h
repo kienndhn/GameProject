@@ -6,6 +6,7 @@
 #include "Opossum.h"
 
 class Flatform;
+class Opossum;
 extern int xSpeed;
 extern int g;
 

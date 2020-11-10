@@ -1,3 +1,4 @@
+#pragma once 
 #include "Sprite2D.h"
 #include "ResourceManagers.h"
 #include "SpriteAnimation.h";

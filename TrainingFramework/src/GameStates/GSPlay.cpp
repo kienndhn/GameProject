@@ -66,11 +66,11 @@ void GSPlay::Init()
 	
 
 	//new Opossum
-	std::shared_ptr < Opossum> m_Opossum = std::make_shared<Opossum>(model);
+	std::shared_ptr <Opossum> m_Opossum = std::make_shared<Opossum>(model);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 1.5, screenHeight / 2);
 	m_listOpossum.push_back(m_Opossum);
 
-	std::shared_ptr < Opossum> m_Opossum = std::make_shared<Opossum>(model);
+	m_Opossum = std::make_shared<Opossum>(model);
 	m_Opossum->GetAnimation()->Set2DPosition(screenWidth * 2.0, screenHeight / 2);
 	m_listOpossum.push_back(m_Opossum);
 
