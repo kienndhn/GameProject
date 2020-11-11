@@ -34,6 +34,7 @@ public:
 
 	void CheckFlatform(std::shared_ptr<Flatform> flatform);
 
+	void CheckCollisionPlayer(std::shared_ptr<Player> player);
 	bool GetInAir() {
 		return m_isActive;
 	}

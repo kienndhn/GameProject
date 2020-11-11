@@ -145,6 +145,7 @@ void GSPlay::HandleEvents()
 	for (auto op : m_listOpossum) {
 		if (op->GetAcvite()) {
 			printf("chay ne\n");
+			m_Player->CheckCollision(op);
 			for (auto gr : m_listFlatform) {
 				Vector2 pos = gr->Get2DPosition();
 				if (gr->GetIsInScreen()) {

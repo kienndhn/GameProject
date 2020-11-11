@@ -6,8 +6,9 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 {
 	m_isInAir = false;
 	m_xSpeed = 150;
-	m_ySpeed = -100;
+	m_ySpeed = -200;
 	m_isRight = true;
+	m_isAlive = true;
 
 	shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	texture = ResourceManagers::GetInstance()->GetTexture("player_idle");
@@ -62,7 +63,7 @@ void Player::HandleKeyEvents(GLbyte key, bool bIsPressed)
 	if (!bIsPressed) {
 		xSpeed = 0;
 	}
-	else {
+	else{
 		switch (key) {
 		case KEY_SPACE:
 			if (!m_isInAir)
@@ -132,39 +133,59 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 
 void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
 {
+	Vector2 pos = GetAnimation()->Get2DPosition();
+	Vector2 oPos = opossum->GetAnimation()->Get2DPosition();
+	if (pos.y + 26 > oPos.y - 21) {
+		{
+			if (abs(pos.x - oPos.x) < 1) {
 
+				printf("va cham\n");
+				m_isAlive = false;
+
+			}
+			else {
+
+				printf("khong va cham");
+				m_isAlive = true;
+
+			}
+		}
+	}
+	
 }
 
 void Player::Move(GLfloat deltatime)
 {
-	if (m_ySpeed > 0) {
-		if (m_isRight)
-			m_pAnimation = m_pJumpDown;
-		else
-			m_pAnimation = m_pJumpLeftDown;
-	}
-	else {
-		if (m_isRight) {
-			m_pAnimation = m_pJumpUp;
-		}
-		else
-			m_pAnimation = m_pJumpLeftUp;
-	}
-
-	if (m_isInAir) {
-		m_ySpeed += g;
-	}
-	else {
-		m_ySpeed = 0;
-
-		if (xSpeed == 0) {
-			Idle();
+	if (m_isAlive) {
+		if (m_ySpeed > 0) {
+			if (m_isRight)
+				m_pAnimation = m_pJumpDown;
+			else
+				m_pAnimation = m_pJumpLeftDown;
 		}
 		else {
-			Run();
+			if (m_isRight) {
+				m_pAnimation = m_pJumpUp;
+			}
+			else
+				m_pAnimation = m_pJumpLeftUp;
+		}
+
+		if (m_isInAir) {
+			m_ySpeed += g;
+		}
+		else {
+			m_ySpeed = 0;
+
+			if (xSpeed == 0) {
+				Idle();
+			}
+			else {
+				Run();
+			}
 		}
 	}
-
+	
 	m_vPosition.y += m_ySpeed * deltatime;
 	
 	

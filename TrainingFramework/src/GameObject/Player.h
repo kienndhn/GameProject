@@ -56,6 +56,8 @@ private:
 	
 	bool m_isInAir;
 	
+	bool m_isAlive;
+
 	int m_xSpeed;
 	
 	int m_ySpeed;

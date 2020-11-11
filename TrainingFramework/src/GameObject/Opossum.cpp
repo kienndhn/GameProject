@@ -88,6 +88,11 @@ void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
 
 }
 
+void Opossum::CheckCollisionPlayer(std::shared_ptr<Player> player)
+{
+
+}
+
 
 
 void Opossum::Move(GLfloat deltatime)

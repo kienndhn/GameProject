@@ -93,6 +93,8 @@ void GSMenu::HandleTouchEvents(int x, int y, bool bIsPressed)
 		(it)->HandleTouchEvents(x, y, bIsPressed);
 		if ((it)->IsHandle()) break;
 	}
+
+	
 }
 
 void GSMenu::Update(float deltaTime)
