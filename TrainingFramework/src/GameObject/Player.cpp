@@ -6,7 +6,7 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 {
 	m_isInAir = false;
 	m_xSpeed = 150;
-	m_ySpeed = -200;
+	m_ySpeed = -280;
 	m_isRight = true;
 	m_isAlive = true;
 
@@ -43,11 +43,15 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 	m_pJumpLeftDown = std::make_shared<SpriteAnimation>(model, shader, texture, 1, 0.1f);
 	m_pJumpLeftDown->SetSize(52, 52);
 
+	texture = ResourceManagers::GetInstance()->GetTexture("player_hurt");
+	m_pHurt = std::make_shared<SpriteAnimation>(model, shader, texture, 2, 0.1f);
+	m_pHurt->SetSize(52, 52);
+
 	m_pAnimation = m_pIdle;
 
 	m_vPosition.x = 240;
 
-	m_vPosition.y = 0;
+	m_vPosition.y = 100;
 }
 
 
@@ -60,39 +64,33 @@ Player::~Player()
 
 void Player::HandleKeyEvents(GLbyte key, bool bIsPressed)
 {
-	if (!bIsPressed) {
-		xSpeed = 0;
-	}
-	else{
-		switch (key) {
-		case KEY_SPACE:
-			if (!m_isInAir)
-			{
-				m_isInAir = true;
-				m_ySpeed = -300;
-				
-			}
-			break;
-		case KEY_RIGHT:
-			m_isRight = true;
-			xSpeed = -m_xSpeed;
-			break;
-		case KEY_LEFT:
-			m_isRight = false;
-			xSpeed = m_xSpeed;
-			break;
+	if (m_isAlive)
+	{
+		if (!bIsPressed) {
+			xSpeed = 0;
 		}
-	}	
-}
+		else {
+			switch (key) {
+			case KEY_SPACE:
+				if (!m_isInAir)
+				{
+					m_isInAir = true;
+					m_ySpeed = -280;
 
-//void Player::Jump()
-//{
-//	if (m_isRight) {
-//		m_pAnimation = m_pJumpUp;
-//	}
-//	else
-//		m_pAnimation = m_pJumpLeftUp;
-//}
+				}
+				break;
+			case KEY_RIGHT:
+				m_isRight = true;
+				xSpeed = -m_xSpeed;
+				break;
+			case KEY_LEFT:
+				m_isRight = false;
+				xSpeed = m_xSpeed;
+				break;
+			}
+		}
+	}
+}
 
 void Player::Run() {
 
@@ -121,6 +119,11 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 	Vector2 fPos = flatform->Get2DPosition();
 	Vector2 fSize = flatform->GetSize();
 
+	if (pos.y > screenHeight - 50) 
+	{
+		m_isAlive = false;
+		m_ySpeed = 100;
+	}
 	
 	if((pos.y + 26 <= fPos.y - fSize.y * 0.5 + 11) && (pos.y + 26 >= fPos.y - fSize.y * 0.5) && (pos.x + 10 >= fPos.x - fSize.x * 0.5 && pos.x - 10 <= fPos.x + fSize.x * 0.5))
 	{
@@ -135,23 +138,40 @@ void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
 {
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	Vector2 oPos = opossum->GetAnimation()->Get2DPosition();
-	if (pos.y + 26 > oPos.y - 21) {
+	if (oPos.y - pos.y < 26) {
 		{
-			if (abs(pos.x - oPos.x) < 1) {
+			if (abs(pos.x - oPos.x) < 45) {
 
-				printf("va cham\n");
 				m_isAlive = false;
 
 			}
 			else {
 
-				printf("khong va cham");
 				m_isAlive = true;
 
 			}
 		}
 	}
-	
+	else if (oPos.y - pos.y > 26 && oPos.y - pos.y < 35 && abs(pos.x - oPos.x) < 40)
+	{
+		m_ySpeed = -100;
+		score += opossum->GetScore();
+		printf("%d \n", score);
+		opossum->Death();
+	}
+}
+
+void Player::CheckItem(std::shared_ptr<Item> item)
+{
+	Vector2 pos = GetAnimation()->Get2DPosition();
+	Vector2 iPos = item->GetAnimation()->Get2DPosition();
+	if (sqrt((pos.x - iPos.x)*(pos.x - iPos.x) + (pos.y - iPos.y)) <= 20) {
+		{
+			score += item->GetScore();
+			item->IsFed();
+			printf("%d \n", score);
+		}
+	}
 }
 
 void Player::Move(GLfloat deltatime)
@@ -172,7 +192,7 @@ void Player::Move(GLfloat deltatime)
 		}
 
 		if (m_isInAir) {
-			m_ySpeed += g;
+			m_ySpeed += gravity;
 		}
 		else {
 			m_ySpeed = 0;
@@ -185,16 +205,20 @@ void Player::Move(GLfloat deltatime)
 			}
 		}
 	}
-	
+
+	else
+	{
+		m_ySpeed = 100;
+		m_pAnimation = m_pHurt;
+	}
 	m_vPosition.y += m_ySpeed * deltatime;
-	
-	
 }
 
 
 void Player::Update(GLfloat deltatime)
 {	
 	Move(deltatime);
+	GetAnimation()->Update(deltatime);
 	m_pAnimation->Set2DPosition(m_vPosition);
 }
 

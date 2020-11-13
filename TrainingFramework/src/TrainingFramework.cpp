@@ -3,11 +3,14 @@
 #include "Application.h"
 #include "utilities.h" 
 #include "vld.h"
+
 GLint screenWidth = 480;
 GLint screenHeight = 320;
 GLint xSpeed = 100;
 GLint ySpeed = 0;
-GLint g = 9;
+GLint gravity = 9;
+GLint score = 0;
+
 GLint Init(ESContext* esContext)
 {
 	Application::GetInstance()->Init();
@@ -60,7 +63,7 @@ GLint _tmain(GLint argc, _TCHAR* argv[])
 	CleanUp();
 
 	//identifying memory leaks
-	MemoryDump();
+	//MemoryDump();
 	//printf("Press any key...\n");
 	//_getch();
 

@@ -4,11 +4,15 @@
 #include "SpriteAnimation.h";
 #include "FlatForm.h"
 #include "Opossum.h"
+#include "Item.h"
 
 class Flatform;
 class Opossum;
+class Item;
 extern int xSpeed;
-extern int g;
+extern int gravity;
+extern int screenHeight;
+extern int score;
 
 class Player : public Sprite2D
 {
@@ -46,6 +50,11 @@ public:
 
 	void CheckCollision(std::shared_ptr<Opossum> opossum);
 
+	bool CheckAlive() {
+		return m_isAlive;
+	}
+
+	void CheckItem(std::shared_ptr<Item> item);
 private:
 	
 	void(*m_pKeyPreesed)();
@@ -66,6 +75,8 @@ private:
 	
 	std::shared_ptr<SpriteAnimation> m_pAnimation;
 	
+	std::shared_ptr<SpriteAnimation> m_pHurt;
+
 	std::shared_ptr<SpriteAnimation> m_pRun;
 	
 	std::shared_ptr<SpriteAnimation> m_pIdle;

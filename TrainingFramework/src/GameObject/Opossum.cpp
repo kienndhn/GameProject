@@ -4,31 +4,18 @@ extern int screenWidth; //need get on Graphic engine
 extern int screenHeight;
 extern int xSpeed;
 
-Opossum::Opossum(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture)
-	: Sprite2D(model, shader, texture)
+
+Opossum::Opossum(std::shared_ptr<Models> model, GLint x, GLint y)
 {
 	m_xDistance = 1000;
-	m_xSpeed = 100;
-	m_isActive = false;
-	m_isInAir = false;
-
-	shader = ResourceManagers::GetInstance()->GetShader("Animation");
-	texture = ResourceManagers::GetInstance()->GetTexture("opossum");
-	m_pLeft = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
-	m_pLeft->SetSize(54, 42);
-	
-	texture = ResourceManagers::GetInstance()->GetTexture("opossum_right");
-	m_pRight = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
-	m_pRight->SetSize(54, 42);
-
-	m_pAnimation = m_pLeft;
-}Opossum::Opossum(std::shared_ptr<Models> model)
-{
-	m_xDistance = 1000;
-	m_xSpeed = 100;
+	m_xSpeed = 160;
 	m_ySpeed = 0;
 	m_isActive = false;
-	
+	m_isAlive = true;
+	m_isInAir = true;
+	m_timeToDraw = 0;
+	m_iScore = 20;
+
 	auto shader = ResourceManagers::GetInstance()->GetShader("Animation");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("opossum");
 	m_pLeft = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
@@ -38,16 +25,35 @@ Opossum::Opossum(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader,
 	m_pRight = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
 	m_pRight->SetSize(54, 42);
 
+	texture = ResourceManagers::GetInstance()->GetTexture("death");
+	m_pDeath = std::make_shared<SpriteAnimation>(model, shader, texture, 6, 0.1f);
+	m_pDeath->SetSize(54, 42);
+
 	m_pAnimation = m_pLeft;
+	m_pAnimation->Set2DPosition(x, y);
 }
 
 Opossum::~Opossum()
 {
 }
 
-void Opossum::Update(GLfloat deltatime) {
-	Move(deltatime);
+void Opossum::Update(GLfloat deltatime) 
+{
+	m_vPosition = GetAnimation()->Get2DPosition();
+
+	if (m_isAlive)
+	{
+		Move(deltatime);
+	}
+	else
+	{
+		m_vPosition.x += deltatime * xSpeed;
+		m_pAnimation = m_pDeath;
+		m_timeToDraw += deltatime;
+	}
+
 	GetAnimation()->Set2DPosition(m_vPosition);
+	GetAnimation()->Update(deltatime);
 }
 
 void Opossum::Detect(std::shared_ptr<Player> player)
@@ -57,19 +63,20 @@ void Opossum::Detect(std::shared_ptr<Player> player)
 
 	m_xDistance = oposumPos.x - playerPos.x;
 
-	if (m_xDistance != 0) {
+	if (m_xDistance != 0 && abs(playerPos.y - oposumPos.y) < 40) {
 		m_Direction = m_xDistance / abs(m_xDistance);
 	}
-	
-	if (abs(m_xDistance) - 27 < screenWidth / 2 ) {
+
+	if (abs(m_xDistance) - 27 < screenWidth / 2) {
 		m_isActive = true;
 	}
 	else {
 		m_isActive = false;
 	}
-	if (oposumPos.y - 21> screenHeight) {
+	if (oposumPos.y - 21 > screenHeight) {
 		m_isActive = false;
 	}
+
 }
 
 void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
@@ -77,27 +84,25 @@ void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	Vector2 fPos = flatform->Get2DPosition();
 	Vector2 fSize = flatform->GetSize();
-
-	if ((pos.y + 21 <= fPos.y - fSize.y * 0.5 + 11) && (pos.y + 21 >= fPos.y - fSize.y * 0.5) && (pos.x + 10 >= fPos.x - fSize.x * 0.5 && pos.x - 10 <= fPos.x + fSize.x * 0.5))
+	
+	if ((pos.y + 21 <= fPos.y - fSize.y * 0.5 + 11) && (pos.y + 21 >= fPos.y - fSize.y * 0.5) && abs(fPos.x - pos.x) < fSize.x * 0.5)
 	{
-		m_vPosition.y = fPos.y - 0.5 * fSize.y - 27;
+		m_vPosition.y = fPos.y - 0.5 * fSize.y + 21;
 		m_isInAir = false;
 	}
 
-	else m_isInAir = true;
-
+	else
+	{
+		m_isInAir = true;
+	}
+	if (pos.y + 21 > screenHeight)
+	{
+		m_isAlive = false;
+	}
 }
-
-void Opossum::CheckCollisionPlayer(std::shared_ptr<Player> player)
-{
-
-}
-
-
 
 void Opossum::Move(GLfloat deltatime)
 {
-	m_vPosition = GetAnimation()->Get2DPosition();
 	if (m_Direction >= 0) {
 		m_pAnimation = m_pLeft;
 	}
@@ -108,8 +113,7 @@ void Opossum::Move(GLfloat deltatime)
 	if (m_isActive) {
 		m_vPosition.x = m_vPosition.x - deltatime * (m_xSpeed * m_Direction - xSpeed);
 		if (m_isInAir) {
-			m_ySpeed += g;
-			printf("roi ne \n");
+			m_ySpeed += gravity;
 		}
 		else {
 			m_ySpeed = 0;
@@ -118,5 +122,6 @@ void Opossum::Move(GLfloat deltatime)
 	}
 	else {
 		m_vPosition.x = m_vPosition.x + deltatime * xSpeed;
-	}	
+	}
+
 }

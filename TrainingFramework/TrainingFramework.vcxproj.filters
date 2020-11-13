@@ -84,6 +84,9 @@
     <ClCompile Include="src\GameObject\Opossum.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameObject\Floater.cpp" />
+    <ClCompile Include="src\GameObject\Item.cpp" />
+    <ClCompile Include="src\GameStates\GSCredit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -158,6 +161,10 @@
     <ClInclude Include="src\GameObject\Opossum.h">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameObject\Floater.h" />
+    <ClInclude Include="src\GameObject\Item.h" />
+    <ClInclude Include="src\GameStates\GSCredit.h" />
+    <ClInclude Include="..\Include\Soloud\soloud.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

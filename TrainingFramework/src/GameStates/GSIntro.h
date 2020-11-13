@@ -8,20 +8,21 @@ public:
 	GSIntro();
 	~GSIntro();
 
-	void Init();
-	void Exit();
+	void	Init();
+	void	Exit();
 
-	void Pause();
-	void Resume();
+	void	Pause();
+	void	Resume();
 
-	void HandleEvents();
-	void HandleKeyEvents(int key, bool bIsPressed);
-	void HandleTouchEvents(int x, int y, bool bIsPressed);
-	void Update(float deltaTime);
-	void Draw();
+	void	HandleEvents();
+	void	HandleKeyEvents(int key, bool bIsPressed);
+	void	HandleTouchEvents(int x, int y, bool bIsPressed);
+	void	Update(float deltaTime);
+	void	Draw();
 
 private:
+	std::shared_ptr<Sprite2D> m_background;
 	std::shared_ptr<Sprite2D> m_logo;
-	float m_time;
+	float m_timeToDraw;
 };
 

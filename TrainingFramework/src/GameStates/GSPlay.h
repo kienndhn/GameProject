@@ -12,6 +12,7 @@ class Player;
 class Opossum;
 class Ground;
 class Platform;
+class Item;
 
 class GSPlay :
 	public GameStateBase
@@ -42,13 +43,25 @@ public:
 	
 	void	SetNewPostionForBullet();
 
+	void	SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders>);
+
+	void	SetOpossum(std::shared_ptr<Models> model);
+
+	void	SetItem(std::shared_ptr<Models> model);
+
+	void	SetIsPause(bool p) {
+		m_isPause = p;
+	}
+
+	std::vector<std::shared_ptr<GameButton>>	m_listButton;
+
 private:
 
-	std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
+	//std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
 	
 	std::shared_ptr<Text>  m_score;
-	
-	std::list<std::shared_ptr<GameButton>>	m_listButton;
+
+	std::shared_ptr<Text>  m_GameOver;
 	
 	std::vector < std::shared_ptr<SpriteAnimation>> m_listSpriteAnimations;
 	
@@ -59,6 +72,10 @@ private:
 	std::list< std::shared_ptr<Opossum>> m_listOpossum;
 	
 	std::list<std::shared_ptr<Flatform>> m_listFlatform;
+
+	std::list<std::shared_ptr<Item>> m_listItem;
+
+	bool	m_isPause;
 };
 
 

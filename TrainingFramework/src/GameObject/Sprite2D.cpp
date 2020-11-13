@@ -3,6 +3,7 @@
 #include "Models.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "ResourceManagers.h"
 
 extern GLint screenWidth;
 extern GLint screenHeight;

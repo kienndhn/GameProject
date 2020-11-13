@@ -13,12 +13,16 @@ class Opossum : public Sprite2D
 {
 
 public:
-	Opossum(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture);
-	Opossum(std::shared_ptr<Models> model);
+	Opossum(std::shared_ptr<Models> model, GLint x, GLint y);
 	~Opossum();
 
 	int GetxSpeed() {
 		return m_xSpeed;
+	}
+
+	int GetScore()
+	{
+		return m_iScore;
 	}
 
 	std::shared_ptr<SpriteAnimation> GetAnimation() {
@@ -28,18 +32,33 @@ public:
 	bool GetAcvite() {
 		return m_isActive;
 	}
+
 	void Update(GLfloat deltatime);
 
 	void Detect(std::shared_ptr<Player> player);
 
 	void CheckFlatform(std::shared_ptr<Flatform> flatform);
-
-	void CheckCollisionPlayer(std::shared_ptr<Player> player);
+	
 	bool GetInAir() {
-		return m_isActive;
+		return m_isInAir;
+	}
+
+	bool CheckAlive() {
+		return m_isAlive;
+	}
+
+	void Death() {
+		m_isActive = false;
+		m_isAlive = false;
 	}
 
 	void Move(GLfloat deltatime);
+
+	float GetTimeToDraw()
+	{
+		return m_timeToDraw;
+	}
+
 private:
 
 	std::shared_ptr<SpriteAnimation> m_pAnimation;
@@ -48,17 +67,25 @@ private:
 
 	std::shared_ptr<SpriteAnimation> m_pRight;
 
+	std::shared_ptr<SpriteAnimation> m_pDeath;
+
+	int m_iScore;
+
 	int m_xSpeed;
 
 	int m_ySpeed;
 
 	bool m_isActive;
 
+	bool m_isAlive;
+
 	int m_xDistance;
 
 	int m_Direction;
 
 	bool m_isInAir;
+
+	float m_timeToDraw;
 
 	Vector2 m_vPosition;
 };

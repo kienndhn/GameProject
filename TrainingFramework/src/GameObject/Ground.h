@@ -10,10 +10,9 @@ class Ground :
 	public Flatform
 {
 public:
-	Ground(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture)
-		:Flatform(model, shader, texture) {};
+	Ground(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture, GLint x, GLint y, GLint width, GLint height)
+		:Flatform(model, shader, texture, x, y, width, height) {};
 		
 	~Ground();
-	void checkPlayer(std::shared_ptr<Player> player);
 };
 

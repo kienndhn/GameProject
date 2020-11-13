@@ -4,14 +4,6 @@ Flatform::~Flatform()
 {
 }
 
-void Flatform::SetSize(GLint width, GLint height)
-{
-	m_isInScreen = false;
-	Sprite2D::SetSize(width, height);
-	m_Size.x = width;
-	m_Size.y = height;
-}
-
 void Flatform::CheckInScreen() 
 {
 	Vector2 pos = Get2DPosition();
