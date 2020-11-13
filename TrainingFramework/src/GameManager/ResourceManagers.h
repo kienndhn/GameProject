@@ -50,5 +50,5 @@ private:
 	//Sound
 	std::string m_SoundsPath;
 	std::map<std::string, std::shared_ptr<SoLoud::Wav>> m_MapWave;
-	std::shared_ptr<SoLoud::Soloud> m_Soloud;
+	SoLoud::Soloud m_Soloud;
 };

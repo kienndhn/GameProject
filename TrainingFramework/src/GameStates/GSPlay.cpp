@@ -30,8 +30,7 @@ GSPlay::GSPlay()
 
 GSPlay::~GSPlay()
 {
-	
-
+	ResourceManagers::GetInstance()->PauseSounds("TakinItBack");
 }
 
 
@@ -102,7 +101,7 @@ void GSPlay::Init()
 		pause = true;
 	});
 	m_listButton.push_back(button);
-	//ResourceManagers::GetInstance()->PlaySounds("SneakySnitch", true);
+	ResourceManagers::GetInstance()->PlaySounds("TakinItBack", true);
 }
 
 void GSPlay::Exit()
@@ -187,69 +186,65 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 void GSPlay::Update(float deltaTime)
 {
 
-	//printf("%s\n", pause ? "pause" : "not");
-	if (!pause)
+	m_listButton[1]->SetActive(true);
+	m_score->setText("score " + std::to_string(score));
+
+	m_Player->Update(deltaTime);
+
+	if (m_Player->CheckAlive())
 	{
-		m_listButton[1]->SetActive(true);
-		m_score->setText("score " + std::to_string(score));
-
-		m_Player->Update(deltaTime);
-
-		if (m_Player->CheckAlive())
+		for (auto gr : m_listFlatform)
 		{
-			for (auto gr : m_listFlatform)
-			{
-				Vector2 pos = gr->Get2DPosition();
-				pos.x = pos.x + xSpeed * deltaTime;
+			Vector2 pos = gr->Get2DPosition();
+			pos.x = pos.x + xSpeed * deltaTime;
 
-				gr->Set2DPosition(pos);
-				gr->CheckInScreen();
-				gr->Update(deltaTime);
-			}
-
-			bg1->Update(deltaTime);
-
-			for (auto opossum : m_listOpossum)
-			{
-				if (opossum->GetTimeToDraw() < 0.5)
-				{
-					opossum->Detect(m_Player);
-					opossum->Update(deltaTime);
-				}
-			}
-
-			for (auto item : m_listItem)
-			{
-				if (item->GetTimeToDraw() < 0.5)
-				{
-					item->Update(deltaTime);
-				}
-			}
-			HandleEvents();
+			gr->Set2DPosition(pos);
+			gr->CheckInScreen();
+			gr->Update(deltaTime);
 		}
 
-		else {
+		bg1->Update(deltaTime);
 
-			m_GameOver->Update(deltaTime);
-
-			m_score->Set2DPosition(200, 150);
-
-		}
-
-
-		for (auto it : m_listButton)
+		for (auto opossum : m_listOpossum)
 		{
-			if (it->GetActive())
+			if (opossum->GetTimeToDraw() < 0.5)
 			{
-				it->Update(deltaTime);
+				opossum->Detect(m_Player);
+				opossum->Update(deltaTime);
 			}
 		}
-		m_score->Update(deltaTime);
+
+		for (auto item : m_listItem)
+		{
+			if (item->GetTimeToDraw() < 0.5)
+			{
+				item->Update(deltaTime);
+			}
+		}
+		HandleEvents();
 	}
+
 	else {
-		m_listButton[2]->SetActive(true);
+
+		m_GameOver->Update(deltaTime);
+
+		m_score->Set2DPosition(200, 150);
+
+		ResourceManagers::GetInstance()->PauseSounds("TakinItBack");
+
 	}
-	
+
+
+	for (auto it : m_listButton)
+	{
+		if (it->GetActive())
+		{
+			it->Update(deltaTime);
+		}
+	}
+	m_score->Update(deltaTime);
+
+
 }
 
 void GSPlay::Draw()
