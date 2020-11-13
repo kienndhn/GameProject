@@ -298,34 +298,34 @@ void GSPlay::SetNewPostionForBullet()
 void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader)
 {
 	auto texture = ResourceManagers::GetInstance()->GetTexture("ground");
-	std::shared_ptr<Ground> m_Ground = std::make_shared<Ground>(model, shader, texture, 200, 280, 336, 80);
+	std::shared_ptr<Flatform> m_Ground = std::make_shared<Flatform>(model, shader, texture, 200, 280, 336, 80);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 3000, 280, 336, 80);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3000, 280, 336, 80);
 	m_listFlatform.push_back(m_Ground);
 
 	texture = ResourceManagers::GetInstance()->GetTexture("largeground");
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 960, 264, 960, 112);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 960, 264, 960, 112);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 2000, 264, 960, 112);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2000, 264, 960, 112);
 	m_listFlatform.push_back(m_Ground);
 
 	texture = ResourceManagers::GetInstance()->GetTexture("floater");
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 2550, 150, 48, 16);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2550, 150, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 2700, 150, 48, 16);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2700, 150, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Ground>(model, shader, texture,900, 150, 48, 16);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture,900, 150, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 3250, 180, 48, 16);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3250, 180, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
 	texture = ResourceManagers::GetInstance()->GetTexture("smallfloater");
-	m_Ground = std::make_shared<Ground>(model, shader, texture, 3370, 170, 32, 16);
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3370, 170, 32, 16);
 	m_listFlatform.push_back(m_Ground);
 }
 

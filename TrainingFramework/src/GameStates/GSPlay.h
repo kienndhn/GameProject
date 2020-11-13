@@ -2,7 +2,6 @@
 #include "gamestatebase.h"
 #include "GameButton.h"
 #include "FlatForm.h"
-#include "Ground.h"
 
 class Sprite2D;
 class Sprite3D;

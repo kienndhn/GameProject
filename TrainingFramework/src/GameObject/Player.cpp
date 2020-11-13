@@ -119,7 +119,7 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 	Vector2 fPos = flatform->Get2DPosition();
 	Vector2 fSize = flatform->GetSize();
 
-	if (pos.y > screenHeight - 50) 
+	if (pos.y > screenHeight - 60) 
 	{
 		m_isAlive = false;
 		m_ySpeed = 100;
