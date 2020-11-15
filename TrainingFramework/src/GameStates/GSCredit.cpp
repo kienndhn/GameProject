@@ -26,6 +26,7 @@ void GSCredit::Init()
 	m_button->Set2DPosition(450, 25);
 	m_button->SetOnClick([]()
 	{
+		//ResourceManagers::GetInstance()->PlaySounds("menu", true);
 		GameStateMachine::GetInstance()->PopState();
 	});
 	

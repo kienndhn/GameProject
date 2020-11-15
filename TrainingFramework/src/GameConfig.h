@@ -104,3 +104,7 @@
 #define KEY_MOVE_BACKWORD		83	// key s
 
 #endif
+
+#define RIGHT 1
+#define LEFT 2
+#define JUMP 4

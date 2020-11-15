@@ -1,14 +1,12 @@
 #pragma once
 #include "GameStatebase.h"
 #include "GameButton.h"
-#include "SpriteAnimation.h"
-
-class GSIntro :
+class GSDone :
 	public GameStateBase
 {
 public:
-	GSIntro();
-	~GSIntro();
+	GSDone();
+	~GSDone();
 
 	void	Init();
 	void	Exit();
@@ -23,11 +21,9 @@ public:
 	void	Draw();
 
 private:
-	std::list<std::shared_ptr<Sprite2D>> m_listSprite;
+	std::list<std::shared_ptr<GameButton>> m_listButton;
 	std::shared_ptr<Text> m_text;
+	std::shared_ptr<Text> m_score;
 	std::shared_ptr<Sprite2D> m_background;
-	std::shared_ptr<SpriteAnimation> m_animation;
-	float m_timeToDraw;
 };
-
 

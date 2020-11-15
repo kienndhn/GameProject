@@ -5,10 +5,13 @@
 #include "FlatForm.h"
 #include "Opossum.h"
 #include "Item.h"
+#include "Home.h"
 
 class Flatform;
 class Opossum;
 class Item;
+class Home;
+
 extern int xSpeed;
 extern int gravity;
 extern int screenHeight;
@@ -44,6 +47,8 @@ public:
 	
 	void CheckFlatform(std::shared_ptr<Flatform> flatform);
 	
+	//void CheckHome(std::shared_ptr<Home> home);
+
 	bool GetInAir() {
 		return m_isInAir;
 	}

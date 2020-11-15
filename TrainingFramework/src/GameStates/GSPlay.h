@@ -12,6 +12,7 @@ class Opossum;
 class Ground;
 class Platform;
 class Item;
+class Home;
 
 class GSPlay :
 	public GameStateBase
@@ -39,6 +40,7 @@ public:
 	 
 	void	Draw();
 
+	bool	CheckPass();
 	
 	void	SetNewPostionForBullet();
 
@@ -59,8 +61,6 @@ private:
 	//std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
 	
 	std::shared_ptr<Text>  m_score;
-
-	std::shared_ptr<Text>  m_GameOver;
 	
 	std::vector < std::shared_ptr<SpriteAnimation>> m_listSpriteAnimations;
 	
@@ -74,7 +74,11 @@ private:
 
 	std::list<std::shared_ptr<Item>> m_listItem;
 
+	std::shared_ptr<Home> m_pHome;
+
 	bool	m_isPause;
+
+	bool	m_isPass;
 };
 
 

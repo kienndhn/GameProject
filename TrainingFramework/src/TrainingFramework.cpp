@@ -7,7 +7,7 @@
 GLint screenWidth = 480;
 GLint screenHeight = 320;
 GLint xSpeed = 100;
-GLint ySpeed = 0;
+GLint ySpeed = 100;
 GLint gravity = 9;
 GLint score = 0;
 

@@ -1,27 +1,20 @@
-#include "GSGameOver.h"
-
-
-extern int screenWidth; //need get on Graphic engine
-extern int screenHeight; //need get on Graphic engine
-
-
+#include "GSDone.h"
 extern int screenHeight;
 extern int screenWidth;
-extern int ySpeed;
 extern int score;
-GSGameOver::GSGameOver()
+GSDone::GSDone()
 {
 }
 
-GSGameOver::~GSGameOver()
+GSDone::~GSDone()
 {
-	ResourceManagers::GetInstance()->PauseSounds("gameover");
+	ResourceManagers::GetInstance()->PauseSounds("win");
 }
 
-void GSGameOver::Init()
+void GSDone::Init()
 {
+	ResourceManagers::GetInstance()->PlaySounds("win", true);
 
-	ResourceManagers::GetInstance()->PlaySounds("gameover", true);
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("credit");
@@ -30,7 +23,7 @@ void GSGameOver::Init()
 	m_background->Set2DPosition(screenWidth / 2, screenHeight / 2);
 	m_background->SetSize(screenWidth, screenHeight);
 
-	//button menu
+	//back to menu
 	texture = ResourceManagers::GetInstance()->GetTexture("button_home");
 	std::shared_ptr<GameButton> m_button = std::make_shared<GameButton>(model, shader, texture);
 	m_button->Set2DPosition(450, 25);
@@ -41,6 +34,7 @@ void GSGameOver::Init()
 		GameStateMachine::GetInstance()->PopState();
 	});
 	m_listButton.push_back(m_button);
+
 
 	//button replay
 	texture = ResourceManagers::GetInstance()->GetTexture("button_replay");
@@ -54,43 +48,36 @@ void GSGameOver::Init()
 	});
 	m_listButton.push_back(m_button);
 
-
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
 	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("GAME");
-	m_text = std::make_shared<Text>(shader, font, "GameOver!!", TEXT_COLOR::RED, 2.0);
+	m_text = std::make_shared<Text>(shader, font, "Finish!!", TEXT_COLOR::RED, 2.0);
 	m_text->Set2DPosition(Vector2(100, 100));
 
-	m_score = std::make_shared<Text>(shader, font, "Score " + std::to_string(score), TEXT_COLOR::RED, 1.5);
-	m_score->Set2DPosition(Vector2(160, 160));
-
-	shader = ResourceManagers::GetInstance()->GetShader("Animation");
-	texture = ResourceManagers::GetInstance()->GetTexture("player_hurt");
-	m_animation = std::make_shared<SpriteAnimation>(model, shader, texture, 2, 0.1);
-	m_animation->Set2DPosition(240, 180);
-	m_animation->SetSize(52, 52);
+	m_score = std::make_shared<Text>(shader, font, "Score "+std::to_string(score), TEXT_COLOR::RED, 1.5);
+	m_score->Set2DPosition(Vector2(100, 160));
 }
 
-void GSGameOver::Exit()
+void GSDone::Exit()
 {
 }
 
-void GSGameOver::Pause()
+void GSDone::Pause()
 {
 }
 
-void GSGameOver::Resume()
+void GSDone::Resume()
 {
 }
 
-void GSGameOver::HandleEvents()
+void GSDone::HandleEvents()
 {
 }
 
-void GSGameOver::HandleKeyEvents(int key, bool bIsPressed)
+void GSDone::HandleKeyEvents(int key, bool bIsPressed)
 {
 }
 
-void GSGameOver::HandleTouchEvents(int x, int y, bool bIsPressed)
+void GSDone::HandleTouchEvents(int x, int y, bool bIsPressed)
 {
 	for (auto it : m_listButton)
 	{
@@ -99,13 +86,8 @@ void GSGameOver::HandleTouchEvents(int x, int y, bool bIsPressed)
 	}
 }
 
-void GSGameOver::Update(float deltaTime)
+void GSDone::Update(float deltaTime)
 {
-	Vector2 pos = m_animation->Get2DPosition();
-	m_animation->Set2DPosition(pos.x, pos.y + ySpeed * deltaTime);
-
-	m_animation->Update(deltaTime);
-
 	m_background->Update(deltaTime);
 	for (auto it : m_listButton)
 	{
@@ -115,7 +97,7 @@ void GSGameOver::Update(float deltaTime)
 	m_score->Update(deltaTime);
 }
 
-void GSGameOver::Draw()
+void GSDone::Draw()
 {
 	m_background->Draw();
 	for (auto it : m_listButton)
@@ -124,5 +106,5 @@ void GSGameOver::Draw()
 	}
 	m_text->Draw();
 	m_score->Draw();
-	m_animation->Draw();
 }
+

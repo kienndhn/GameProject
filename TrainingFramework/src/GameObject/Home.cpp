@@ -1,10 +1,10 @@
-#include "FlatForm.h"
+#include "Home.h"
 
-Flatform::~Flatform()
+Home::~Home()
 {
 }
 
-void Flatform::CheckInScreen() 
+void Home::CheckInScreen()
 {
 	Vector2 pos = Get2DPosition();
 	Vector2 size = GetSize();
@@ -17,7 +17,7 @@ void Flatform::CheckInScreen()
 		m_isInScreen = true;
 	}
 }
-void Flatform::Update(GLfloat deltatime)
+void Home::Update(GLfloat deltatime)
 {
 	Vector2 pos = Get2DPosition();
 	pos.x = pos.x + xSpeed * deltatime;

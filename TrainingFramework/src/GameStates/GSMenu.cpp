@@ -18,6 +18,8 @@ GSMenu::~GSMenu()
 
 void GSMenu::Init()
 {
+	/*ResourceManagers::GetInstance()->PlaySounds("menu", true);*/
+
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("back");
 
@@ -33,6 +35,7 @@ void GSMenu::Init()
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 150);
 	button->SetOnClick([]() {
+		ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Play);
 	});
 	m_listButton.push_back(button);
@@ -42,6 +45,7 @@ void GSMenu::Init()
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 210);
 	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Credit);
 	});
 	m_listButton.push_back(button);

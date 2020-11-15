@@ -24,6 +24,7 @@ ResourceManagers::ResourceManagers()
 
 ResourceManagers::~ResourceManagers()
 {
+	m_Soloud.deinit();
 }
 
 void ResourceManagers::AddShader(const std::string& name)
@@ -114,20 +115,12 @@ void ResourceManagers::PlaySounds(const std::string & name, bool loop)
 		m_MapWave.insert(std::pair<std::string, std::shared_ptr<SoLoud::Wav>>(name, wave));
 	}
 	SoLoud::time tm = wave->getLength();
-	if (loop) {
-		wave->setLooping(loop);
-	}
-	//do 
-	//{
-		//SoLoud::time t = -0.0001;
-		//if(t < 0) 
-		//{
-			//t = tm;
-			m_Soloud.play(*wave);
-		//}
-		//t -= (SoLoud::time) 0.1;
-	//} while(loop);
-			printf("%f \n",wave->getLoopPoint());
+	
+	wave->setLooping(loop);
+	
+	m_Soloud.play(*wave);
+		
+	
 }
 
 

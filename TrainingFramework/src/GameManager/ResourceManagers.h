@@ -36,6 +36,8 @@ public:
 	std::shared_ptr<Texture> GetTexture(const std::string& name);
 	std::shared_ptr<Models> GetModel(const std::string& name);
 	std::shared_ptr<Font> GetFont(const std::string& name);
+
+	SoLoud::Soloud m_Soloud;
 private:
 	std::map<std::string, std::shared_ptr<Shaders>> m_MapShader;
 	std::map<std::string, std::shared_ptr<Texture>> m_MapTexture;
@@ -50,5 +52,4 @@ private:
 	//Sound
 	std::string m_SoundsPath;
 	std::map<std::string, std::shared_ptr<SoLoud::Wav>> m_MapWave;
-	SoLoud::Soloud m_Soloud;
 };

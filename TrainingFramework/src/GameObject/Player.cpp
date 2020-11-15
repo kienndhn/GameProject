@@ -62,35 +62,49 @@ Player::~Player()
 }
 
 
+int keyPressed = 0;
 void Player::HandleKeyEvents(GLbyte key, bool bIsPressed)
 {
+
 	if (m_isAlive)
 	{
-		if (!bIsPressed) {
-			xSpeed = 0;
-		}
-		else {
-			switch (key) {
-			case KEY_SPACE:
-				if (!m_isInAir)
-				{
-					m_isInAir = true;
-					m_ySpeed = -280;
+		switch (key) {
 
-				}
-				break;
-			case KEY_RIGHT:
-				m_isRight = true;
-				xSpeed = -m_xSpeed;
-				break;
-			case KEY_LEFT:
-				m_isRight = false;
-				xSpeed = m_xSpeed;
-				break;
+		case KEY_SPACE:
+		
+			if (!m_isInAir)
+			{
+				ResourceManagers::GetInstance()->PlaySounds("jump", false);
+				m_isInAir = true;
+				m_ySpeed = -280;
 			}
+		
+			break;
+		case KEY_RIGHT:
+		
+			m_isRight = true;
+			xSpeed = -m_xSpeed;
+		
+			if (!bIsPressed)
+			{
+				xSpeed = 0;
+			}
+
+			break;
+		case KEY_LEFT:
+		
+			m_isRight = false;
+			xSpeed = m_xSpeed;
+		
+			if (!bIsPressed)
+			{
+				xSpeed = 0;
+			}
+			break;
 		}
 	}
 }
+
 
 void Player::Run() {
 
@@ -121,7 +135,9 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 
 	if (pos.y > screenHeight - 60) 
 	{
+	
 		m_isAlive = false;
+		
 		m_ySpeed = 100;
 	}
 	
@@ -154,9 +170,9 @@ void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
 	}
 	else if (oPos.y - pos.y > 26 && oPos.y - pos.y < 35 && abs(pos.x - oPos.x) < 40)
 	{
+		ResourceManagers::GetInstance()->PlaySounds("hit", false);
 		m_ySpeed = -100;
 		score += opossum->GetScore();
-		printf("%d \n", score);
 		opossum->Death();
 	}
 }
@@ -167,9 +183,9 @@ void Player::CheckItem(std::shared_ptr<Item> item)
 	Vector2 iPos = item->GetAnimation()->Get2DPosition();
 	if (sqrt((pos.x - iPos.x)*(pos.x - iPos.x) + (pos.y - iPos.y)) <= 20) {
 		{
+			ResourceManagers::GetInstance()->PlaySounds("item", false);
 			score += item->GetScore();
 			item->IsFed();
-			printf("%d \n", score);
 		}
 	}
 }
@@ -178,6 +194,7 @@ void Player::Move(GLfloat deltatime)
 {
 	if (m_isAlive) {
 		if (m_ySpeed > 0) {
+
 			if (m_isRight)
 				m_pAnimation = m_pJumpDown;
 			else
@@ -192,7 +209,11 @@ void Player::Move(GLfloat deltatime)
 		}
 
 		if (m_isInAir) {
-			m_ySpeed += gravity;
+
+			if (m_ySpeed < 350)
+			{
+				m_ySpeed += gravity;
+			}
 		}
 		else {
 			m_ySpeed = 0;
