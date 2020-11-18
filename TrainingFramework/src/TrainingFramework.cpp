@@ -67,8 +67,8 @@ void LoadHighScore()
 
 
 GLint Init(ESContext* esContext)
-{
-	LoadHighScore();
+{	
+	//LoadHighScore();
 	Application::GetInstance()->Init();
 	return 0;
 }

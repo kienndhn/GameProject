@@ -2,6 +2,12 @@
 #include "GameStatebase.h"
 #include "GameButton.h"
 #include "SpriteAnimation.h"
+#include <string>
+#include <fstream>
+#include <iostream>
+
+extern int highScore[];
+using namespace std;
 
 class GSIntro :
 	public GameStateBase
@@ -21,6 +27,9 @@ public:
 	void	HandleTouchEvents(int x, int y, bool bIsPressed);
 	void	Update(float deltaTime);
 	void	Draw();
+
+	void	LoadHighScore();
+	
 
 private:
 	std::list<std::shared_ptr<Sprite2D>> m_listSprite;
