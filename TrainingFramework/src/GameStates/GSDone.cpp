@@ -1,18 +1,26 @@
 #include "GSDone.h"
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
 extern int screenHeight;
 extern int screenWidth;
 extern int score;
+extern int highScore[];
 GSDone::GSDone()
 {
 }
 
 GSDone::~GSDone()
 {
+	HighScore();
 	ResourceManagers::GetInstance()->PauseSounds("win");
 }
 
 void GSDone::Init()
 {
+	
 	ResourceManagers::GetInstance()->PlaySounds("win", true);
 
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
@@ -75,6 +83,30 @@ void GSDone::HandleEvents()
 
 void GSDone::HandleKeyEvents(int key, bool bIsPressed)
 {
+}
+
+void GSDone::HighScore()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (score >= highScore[i])
+		{
+			int t = highScore[i];
+			highScore[i] = score;
+			score = t;
+		}
+	}
+
+	fstream f;                      // (2)
+	f.open("highscore.txt", ios::out); // (2)
+
+	for (int i = 0; i < 3; i++)
+	{
+
+		f << highScore[i] << endl;
+	}                        // (3)
+
+	f.close();
 }
 
 void GSDone::HandleTouchEvents(int x, int y, bool bIsPressed)

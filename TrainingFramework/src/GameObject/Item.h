@@ -2,6 +2,8 @@
 #include "Sprite2D.h"
 #include "SpriteAnimation.h"
 #include "ResourceManagers.h"
+
+extern int screenWidth;
 class Item :
 	public Sprite2D
 {
@@ -32,6 +34,17 @@ public:
 	bool ChechIsFed() {
 		return m_isFed;
 	}
+
+	bool CheckInScreen()
+	{
+		Vector2 pos = GetAnimation()->Get2DPosition();
+		if (pos.x + 50 < 0 || pos.x - 50 > screenWidth)
+		{
+			return false;
+		}
+		return true;
+	}
+
 protected:
 
 	std::shared_ptr<SpriteAnimation> m_pAnimation;

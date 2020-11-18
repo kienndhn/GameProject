@@ -9,6 +9,7 @@
 #include "GSGameOver.h"
 #include "GSDone.h"
 #include "GameStatebase.h"
+#include "GSHighScore.h"
 
 std::shared_ptr<GameStateBase> GameStateBase::CreateState(StateTypes stt)
 {
@@ -34,6 +35,10 @@ std::shared_ptr<GameStateBase> GameStateBase::CreateState(StateTypes stt)
 		break;
 	case STATE_Finish:
 		gs = std::make_shared<GSGameOver>();
+		break;;
+	case STATE_High:
+		gs = std::make_shared<GSHighScore>();
+		break;
 	default:
 		break;
 	}

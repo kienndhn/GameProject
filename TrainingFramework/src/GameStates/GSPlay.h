@@ -13,6 +13,7 @@ class Ground;
 class Platform;
 class Item;
 class Home;
+class Frog;
 
 class GSPlay :
 	public GameStateBase
@@ -42,13 +43,15 @@ public:
 
 	bool	CheckPass();
 	
-	void	SetNewPostionForBullet();
+	//void	SetNewPostionForBullet();
 
 	void	SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders>);
 
 	void	SetOpossum(std::shared_ptr<Models> model);
 
 	void	SetItem(std::shared_ptr<Models> model);
+
+	void	SetFrog(std::shared_ptr<Models> model);
 
 	void	SetIsPause(bool p) {
 		m_isPause = p;
@@ -58,7 +61,7 @@ public:
 
 private:
 
-	//std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
+	std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
 	
 	std::shared_ptr<Text>  m_score;
 	
@@ -68,7 +71,9 @@ private:
 	
 	std::shared_ptr<Player> m_Player;
 	
-	std::list< std::shared_ptr<Opossum>> m_listOpossum;
+	std::list<std::shared_ptr<Opossum>> m_listOpossum;
+
+	std::list<std::shared_ptr<Frog>> m_listFrog;
 	
 	std::list<std::shared_ptr<Flatform>> m_listFlatform;
 
@@ -77,6 +82,8 @@ private:
 	std::shared_ptr<Home> m_pHome;
 
 	bool	m_isPause;
+
+	bool	m_timeToDraw;
 
 	bool	m_isPass;
 };

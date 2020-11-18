@@ -29,11 +29,13 @@ void GSMenu::Init()
 	bg1->Set2DPosition(screenWidth / 2, screenHeight / 2);
 	bg1->SetSize(screenWidth, screenHeight);
 	m_listBackGround.push_back(bg1);
-	
+
+
+	//play button
 	texture = ResourceManagers::GetInstance()->GetTexture("button_play");
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 150);
+	button->Set2DPosition(screenWidth / 2, 100);
 	button->SetOnClick([]() {
 		ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Play);
@@ -43,27 +45,85 @@ void GSMenu::Init()
 	//info button
 	texture = ResourceManagers::GetInstance()->GetTexture("button_info");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 210);
+	button->Set2DPosition(screenWidth / 2, 200);
 	button->SetOnClick([]() {
 		//ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Credit);
 	});
 	m_listButton.push_back(button);
 
+	texture = ResourceManagers::GetInstance()->GetTexture("button_high");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, 150);
+	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
+		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_High);
+	});
+	m_listButton.push_back(button);
+
 	//exit button
 	texture = ResourceManagers::GetInstance()->GetTexture("button_quit");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 270);
+	button->Set2DPosition(screenWidth / 2, 250);
 	button->SetOnClick([]() {
 		exit(0);
-		});
+	});
 	m_listButton.push_back(button);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("largefloater");
+	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(120, 180);
+	bg1->SetSize(112, 16);
+	m_listBackGround.push_back(bg1);
+	
+	texture = ResourceManagers::GetInstance()->GetTexture("floater");
+	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(400, 100);
+	bg1->SetSize(48, 16);
+	m_listBackGround.push_back(bg1);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("floater");
+	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(400, 240);
+	bg1->SetSize(48, 16);
+	m_listBackGround.push_back(bg1);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("floater");
+	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(100, 300);
+	bg1->SetSize(48, 16);
+	m_listBackGround.push_back(bg1);
+
+	shader = ResourceManagers::GetInstance()->GetShader("Animation");
+	texture = ResourceManagers::GetInstance()->GetTexture("player_idle");
+	std::shared_ptr<SpriteAnimation> animation = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	animation->Set2DPosition(120, 146);
+	animation->SetSize(52, 52);
+	m_listAnimation.push_back(animation);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("frog_idle");
+	animation = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	animation->Set2DPosition(400, 76);
+	animation->SetSize(35, 32);
+	m_listAnimation.push_back(animation);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("frog_idle");
+	animation = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	animation->Set2DPosition(400, 216);
+	animation->SetSize(35, 32);
+	m_listAnimation.push_back(animation);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("frog_idle");
+	animation = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	animation->Set2DPosition(100, 276);
+	animation->SetSize(35, 32);
+	m_listAnimation.push_back(animation);
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
 	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("GAME");
 	m_Text_gameName = std::make_shared<Text>(shader, font, "Jumping Fox", TEXT_COLOR::RED, 2.0);
-	m_Text_gameName->Set2DPosition(Vector2(100, 100));
+	m_Text_gameName->Set2DPosition(Vector2(100, 50));
 }
 
 void GSMenu::Exit()
@@ -108,7 +168,7 @@ void GSMenu::Update(float deltaTime)
 	/*for (auto bg : m_listBackGround) {
 		Vector2 pos = bg->Get2DPosition();
 		pos.x = pos.x - 100 * deltaTime;
-		if (pos.x < -screenWidth / 2 + 10) {
+		if (pos.x < -screenWidth / 2) {
 			pos.x = screenWidth * 1.5;
 		}
 		bg->Set2DPosition(pos);
@@ -121,11 +181,17 @@ void GSMenu::Update(float deltaTime)
 	{
 		it->Update(deltaTime);
 	}
+	for (auto it : m_listAnimation)
+	{
+		it->Update(deltaTime);
+	}
 }
 
 void GSMenu::Draw()
 {
-	for (auto bg : m_listBackGround) {
+	
+	for (auto bg : m_listBackGround) 
+	{
 		bg->Draw();
 	}
 	for (auto it : m_listButton)
@@ -133,4 +199,8 @@ void GSMenu::Draw()
 		it->Draw();
 	}
 	m_Text_gameName->Draw();
+	for (auto it : m_listAnimation)
+	{
+		it->Draw();
+	}
 }

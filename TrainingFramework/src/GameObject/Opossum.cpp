@@ -39,6 +39,7 @@ Opossum::~Opossum()
 
 void Opossum::Update(GLfloat deltatime) 
 {
+	
 	m_vPosition = GetAnimation()->Get2DPosition();
 
 	if (m_isAlive)

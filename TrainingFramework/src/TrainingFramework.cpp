@@ -3,6 +3,11 @@
 #include "Application.h"
 #include "utilities.h" 
 #include "vld.h"
+#include <string>
+#include <fstream>
+#include <iostream>
+
+using namespace std;
 
 GLint screenWidth = 480;
 GLint screenHeight = 320;
@@ -10,9 +15,60 @@ GLint xSpeed = 100;
 GLint ySpeed = 100;
 GLint gravity = 9;
 GLint score = 0;
+GLint highScore[3];
+
+
+void LoadHighScore()
+{
+	printf("load \n");
+
+	//fstream f;                      // (2)
+	//f.open("highscore.txt", ios::out); // (2)
+
+	//string data1 = "board: modern c++\n"
+	//	"website: www.stdio.vn/modern-cpp\n"
+	//	"mo ta: lap trinh c++"; // (3)
+
+	//int data[3] = { 1,2,3 };
+
+	//for (int i = 0; i < 3; i++)
+	//{
+
+	//	f << data[i] <<endl;
+	//}                        // (3)
+
+	//f.close(); // (4)
+
+
+	fstream f;
+	f.open("highscore.txt", ios::in);
+
+	string data;
+	int i = 0;
+	string line;
+	while (!f.eof())          // (1)
+	{
+		getline(f, line); // (2)
+		data += line + " ";
+	}
+
+	f.close();
+	while (data.find(" "))
+	{
+		highScore[i++] = std::stoi(data.substr(0, data.find(" ")));
+		data = data.substr(data.find(" ") + 1, data.length());
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		printf("%d ", highScore[i]);
+	}
+}
+
 
 GLint Init(ESContext* esContext)
 {
+	LoadHighScore();
 	Application::GetInstance()->Init();
 	return 0;
 }
@@ -46,6 +102,7 @@ void CleanUp()
 
 GLint _tmain(GLint argc, _TCHAR* argv[])
 {
+
 
 	ESContext esContext;
 	esInitContext(&esContext);

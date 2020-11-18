@@ -12,6 +12,8 @@
 #include "Player.h"
 #include "Opossum.h"
 #include "Item.h"
+#include "Frog.h"
+
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -19,12 +21,12 @@ extern int xSpeed;
 extern int ySpeed;
 extern int score;
 
-std::shared_ptr<Sprite2D> bg1;
 
 GSPlay::GSPlay()
 {
 	m_isPause = false;
 	m_isPass = false;
+	m_timeToDraw = 0;
 }
 
 
@@ -44,9 +46,16 @@ void GSPlay::Init()
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	
 	//BackGround
+	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+	std::shared_ptr<Sprite2D> bg1 = std::make_shared<Sprite2D>(model, shader, texture);
+	bg1->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	bg1->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(bg1);
+
 	bg1 = std::make_shared<Sprite2D>(model, shader, texture);
-	bg1->Set2DPosition(screenWidth * 0.5f, screenHeight / 2);
-	bg1->SetSize(screenWidth , screenHeight);
+	bg1->Set2DPosition(screenWidth * 1.5 - 1, screenHeight * 0.5);
+	bg1->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(bg1);
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -61,6 +70,9 @@ void GSPlay::Init()
 
 	//new Opossum
 	SetOpossum(model);
+
+	//new Frog
+	SetFrog(model);
 
 	//ground
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
@@ -173,6 +185,31 @@ void GSPlay::HandleEvents()
 			}
 		}
 	}
+
+	for (auto op : m_listFrog)
+	{
+		if (op->CheckAlive())
+		{
+			if (op->GetAcvite())
+			{
+
+				m_Player->CheckCollision(op);
+				
+				for (auto gr : m_listFlatform)
+				{
+					if (gr->GetIsInScreen())
+					{
+						op->CheckFlatform(gr);
+						if (!op->GetInAir())
+						{
+							break;
+						}
+					}
+				}
+				
+			}
+		}
+	}
 }
 
 void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
@@ -193,6 +230,8 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	printf("%f\n", deltaTime);
+
 	if (CheckPass())
 	{
 		ResourceManagers::GetInstance()->PauseSounds("play");
@@ -207,7 +246,7 @@ void GSPlay::Update(float deltaTime)
 
 		if (m_Player->CheckAlive())
 		{
-
+			
 			m_pHome->Update(deltaTime);
 
 			for (auto gr : m_listFlatform)
@@ -216,7 +255,14 @@ void GSPlay::Update(float deltaTime)
 				gr->Update(deltaTime);
 			}
 
-			bg1->Update(deltaTime);
+			/*for (auto bg : m_listBackGround) {
+				Vector2 pos = bg->Get2DPosition();
+				pos.x = pos.x - 50 * deltaTime;
+				if (pos.x < -screenWidth / 2) {
+					pos.x = screenWidth * 1.5 - 1;
+				}
+				bg->Set2DPosition(pos);
+			}*/
 
 			for (auto opossum : m_listOpossum)
 			{
@@ -225,14 +271,35 @@ void GSPlay::Update(float deltaTime)
 					opossum->Detect(m_Player);
 					opossum->Update(deltaTime);
 				}
+				else
+				{
+					opossum.reset();
+				}
 			}
 
-			for (auto item : m_listItem)
+			for (auto frog : m_listFrog)
+			{
+				if (frog->GetTimeToDraw() < 0.5)
+				{
+					frog->Update(deltaTime);
+				}
+				else
+				{
+					frog.reset();
+				}
+			}
+
+ 			for (auto item : m_listItem)
 			{
 				if (item->GetTimeToDraw() < 0.5)
 				{
 					item->Update(deltaTime);
 				}
+				else
+				{
+					item.reset();
+				}
+				
 			}
 			HandleEvents();
 		}
@@ -260,24 +327,43 @@ void GSPlay::Update(float deltaTime)
 void GSPlay::Draw()
 {
 
-	bg1->Draw();
+	for (auto bg : m_listBackGround) {
+		bg->Draw();
+	}
 
 	for (auto gr : m_listFlatform)
 	{
-		gr->Draw();
+		gr->CheckInScreen();
+		if (gr->GetIsInScreen())
+		{
+			gr->Draw();
+		}
+		
 	}
 
 	for (auto opossum : m_listOpossum)
 	{
-		if (opossum->GetTimeToDraw() < 0.5)
+		if (opossum->GetTimeToDraw() < 0.5 && opossum->CheckInScreen())
 		{
 			opossum->GetAnimation()->Draw();
 		}
 	}
 
+	for (auto frog : m_listFrog)
+	{
+		if (frog->GetTimeToDraw() < 0.5)
+		{
+			if (frog->GetAcvite() && frog->CheckInScreen())
+			{
+				frog->GetAnimation()->Draw();
+			}
+		}
+	}
+
+	
 	for (auto item : m_listItem)
 	{
-		if (item->GetTimeToDraw() < 0.5)
+		if (item->GetTimeToDraw() < 0.5 && item->CheckInScreen())
 		{
 			item->GetAnimation()->Draw();
 		}
@@ -313,11 +399,11 @@ bool GSPlay::CheckPass()
 
 void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader)
 {
-
+	//home
 	auto texture = ResourceManagers::GetInstance()->GetTexture("house");
-	m_pHome = std::make_shared<Home>(model, shader, texture, 2000, 154, 87, 108);
+	m_pHome = std::make_shared<Home>(model, shader, texture, 6500, 154, 87, 108);
 
-
+	//ground
 	texture = ResourceManagers::GetInstance()->GetTexture("ground");
 	std::shared_ptr<Flatform> m_Ground = std::make_shared<Flatform>(model, shader, texture, 200, 280, 336, 80);
 	m_listFlatform.push_back(m_Ground);
@@ -325,6 +411,13 @@ void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shad
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3000, 280, 336, 80);
 	m_listFlatform.push_back(m_Ground);
 
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5000, 280, 336, 80);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5500, 280, 336, 80);
+	m_listFlatform.push_back(m_Ground);
+
+	//land
 	texture = ResourceManagers::GetInstance()->GetTexture("largeground");
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 960, 264, 960, 112);
 	m_listFlatform.push_back(m_Ground);
@@ -332,35 +425,598 @@ void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shad
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2000, 264, 960, 112);
 	m_listFlatform.push_back(m_Ground);
 
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 6500, 264, 960, 112);
+	m_listFlatform.push_back(m_Ground);
+
+
+	//floater
 	texture = ResourceManagers::GetInstance()->GetTexture("floater");
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture,900, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 1000, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 1100, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 1900, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2100, 80, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2300, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2550, 150, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2700, 150, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
-	m_Ground = std::make_shared<Flatform>(model, shader, texture,900, 150, 48, 16);
-	m_listFlatform.push_back(m_Ground);
-
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3250, 180, 48, 16);
 	m_listFlatform.push_back(m_Ground);
 
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3500, 150, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3450, 250, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3600, 240, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3600, 100, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3800, 240, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3800, 80, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4050, 200, 48, 16);
+	m_listFlatform.push_back(m_Ground);
+	
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4250, 200, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4350, 180, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4500, 100, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4600, 240, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4750, 180, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5300, 150, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5250, 250, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5800, 150, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 6000, 150, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 6200, 150, 48, 16);//
+	m_listFlatform.push_back(m_Ground);
+	//small floater
 	texture = ResourceManagers::GetInstance()->GetTexture("smallfloater");
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2000, 120, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 2200, 120, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3370, 170, 32, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3700, 200, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3700, 140, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3900, 200, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3900, 50, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4000, 180, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4000, 80, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4150, 240, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4300, 80, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4400, 100, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4400, 240, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4500, 240, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4550, 300, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4700, 240, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4700, 90, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5200, 200, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5200, 50, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5300, 80, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5400, 80, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5400, 180, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5500, 100, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5600, 50, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5700, 150, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5650, 180, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
+	//big floater
+	texture = ResourceManagers::GetInstance()->GetTexture("largefloater");
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3300, 290, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3700, 290, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4150, 140, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4000, 290, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4300, 290, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 4550, 180, 112, 16);
+	m_listFlatform.push_back(m_Ground);
+
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5800, 240, 112, 16);
 	m_listFlatform.push_back(m_Ground);
 }
 
 void GSPlay::SetOpossum(std::shared_ptr<Models> model) {
-	std::shared_ptr <Opossum> m_Opossum = std::make_shared<Opossum>(model, screenWidth * 1.5, 150);
+
+	std::shared_ptr <Opossum> m_Opossum = std::make_shared<Opossum>(model, 800, 150);
 	m_listOpossum.push_back(m_Opossum);
 
-	m_Opossum = std::make_shared<Opossum>(model, screenWidth * 2.0, 150);
+	m_Opossum = std::make_shared<Opossum>(model, 1300, 150);
 	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 1700, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 1900, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 2100, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 2500, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 3100, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 3200, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 5100, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 4900, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 6300, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 6450, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 6500, 150);
+	m_listOpossum.push_back(m_Opossum);
+
+	m_Opossum = std::make_shared<Opossum>(model, 6700, 150);
+	m_listOpossum.push_back(m_Opossum);
+}
+
+void GSPlay::SetFrog(std::shared_ptr<Models> model)
+{
+	std::shared_ptr <Frog> m_pFrog = std::make_shared<Frog>(model, 900, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 1100, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 1900, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 2100, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 2300, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 2550, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 2700, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3000, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3250, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3500, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3450, 200);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3600, 70);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3600, 150);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3700, 110);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3800, 0);
+	m_listFrog.push_back(m_pFrog);
+	
+	m_pFrog = std::make_shared<Frog>(model, 3800, 120);
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3900, 0);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 3900, 120);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4000, 0);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4000, 120);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4150, 100);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4250, 150);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4300, 30);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4350, 150);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4400, 60);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4400, 200);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4500, 70);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4500, 190);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4550, 250);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4600, 210);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4700, 200);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4700, 40);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4750, 150);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 4200, 110);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5200, 0);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5250, 220);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5300, 00);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5400, 50);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5400, 120);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5500, 40);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5600, 0);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5650, 140);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 5700, 120);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 6000, 120);//
+	m_listFrog.push_back(m_pFrog);
+
+	m_pFrog = std::make_shared<Frog>(model, 6200, 120);//
+	m_listFrog.push_back(m_pFrog);
 }
 
 void GSPlay::SetItem(std::shared_ptr<Models> model)
 {
+	//gem
 	auto texture = ResourceManagers::GetInstance()->GetTexture("gem");
-	std::shared_ptr<Item> m_Gem = std::make_shared<Item>(model, texture, 300, 200, 20);
+	std::shared_ptr<Item> m_Gem = std::make_shared<Item>(model, texture, 200, 200, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 400, 150, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 950, 60, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1050, 60, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2000, 60, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2200, 60, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2625, 60, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3475, 190, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3800, 120, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4000, 130, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4150, 180, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4400, 170, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4550, 280, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4700, 130, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5700, 130, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5100, 130, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5400, 130, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3700, 120, 20);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3500, 60, 20);//
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4550, 100, 20);//
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5900, 60, 20);//
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 6100, 60, 20);//
+	m_listItem.push_back(m_Gem);
+
+	//cherry
+	texture = ResourceManagers::GetInstance()->GetTexture("cherry");
+
+	m_Gem = std::make_shared<Item>(model, texture, 100, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 300, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 700, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 800, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 900, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1100, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1200, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1300, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1600, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1700, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1800, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 1900, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2000, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2100, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2200, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2300, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2400, 170, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 2900, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3000, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3100, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3205, 100, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3500, 100, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3600, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3600, 80, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3700, 180, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3800, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3900, 30, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 3900, 180,10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4050, 180, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4250, 180, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4350, 130, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4000, 50, 010);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4300, 50, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4400, 70, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4500, 80, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4500, 220, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4600, 220, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4700, 160, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4700, 50, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 4900, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5000, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5100, 200, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5200, 30, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5300, 130, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5250, 30, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5300, 50,10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5500, 50, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5600, 30, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 5200, 180, 10);
+	m_listItem.push_back(m_Gem);
+
+	m_Gem = std::make_shared<Item>(model, texture, 6000, 80, 10);
 	m_listItem.push_back(m_Gem);
 }

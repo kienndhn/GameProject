@@ -86,6 +86,8 @@
     <ClCompile Include="src\GameStates\GSGameOver.cpp" />
     <ClCompile Include="src\GameObject\Home.cpp" />
     <ClCompile Include="src\GameStates\GSDone.cpp" />
+    <ClCompile Include="src\GameObject\Frog.cpp" />
+    <ClCompile Include="src\GameStates\GSHighScore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -163,6 +165,8 @@
     <ClInclude Include="src\GameStates\GSGameOver.h" />
     <ClInclude Include="src\GameObject\Home.h" />
     <ClInclude Include="src\GameStates\GSDone.h" />
+    <ClInclude Include="src\GameObject\Frog.h" />
+    <ClInclude Include="src\GameStates\GSHighScore.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

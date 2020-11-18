@@ -6,7 +6,9 @@
 #include "Opossum.h"
 #include "Item.h"
 #include "Home.h"
+#include "Frog.h"
 
+class Frog;
 class Flatform;
 class Opossum;
 class Item;
@@ -54,6 +56,8 @@ public:
 	}
 
 	void CheckCollision(std::shared_ptr<Opossum> opossum);
+
+	void CheckCollision(std::shared_ptr<Frog> frog);
 
 	bool CheckAlive() {
 		return m_isAlive;

@@ -6,6 +6,8 @@
 #include "FlatForm.h"
 #include <math.h>
 
+extern int screenWidth;
+
 class Player;
 class Flatform;
 
@@ -58,7 +60,15 @@ public:
 	{
 		return m_timeToDraw;
 	}
-
+	bool CheckInScreen()
+	{
+		Vector2 pos = GetAnimation()->Get2DPosition();
+		if (pos.x + 50 < 0 || pos.x - 50 > screenWidth)
+		{
+			return false;
+		}
+		return true;
+	}
 private:
 
 	std::shared_ptr<SpriteAnimation> m_pAnimation;

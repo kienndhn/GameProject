@@ -76,7 +76,7 @@ void Player::HandleKeyEvents(GLbyte key, bool bIsPressed)
 			{
 				ResourceManagers::GetInstance()->PlaySounds("jump", false);
 				m_isInAir = true;
-				m_ySpeed = -280;
+				m_ySpeed = -300;
 			}
 		
 			break;
@@ -133,7 +133,7 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 	Vector2 fPos = flatform->Get2DPosition();
 	Vector2 fSize = flatform->GetSize();
 
-	if (pos.y > screenHeight - 60) 
+	if (pos.y > screenHeight - 10) 
 	{
 	
 		m_isAlive = false;
@@ -141,10 +141,10 @@ void Player::CheckFlatform(std::shared_ptr<Flatform> flatform) {
 		m_ySpeed = 100;
 	}
 	
-	if((pos.y + 26 <= fPos.y - fSize.y * 0.5 + 11) && (pos.y + 26 >= fPos.y - fSize.y * 0.5) && (pos.x + 10 >= fPos.x - fSize.x * 0.5 && pos.x - 10 <= fPos.x + fSize.x * 0.5))
+	if((pos.y + 26 <= fPos.y - fSize.y * 0.5 + 16) && (pos.y + 26 >= fPos.y - fSize.y * 0.5 - 2) && (pos.x + 10 >= fPos.x - fSize.x * 0.5 && pos.x - 10 <= fPos.x + fSize.x * 0.5))
 	{
 		m_vPosition.y = fPos.y - 0.5*fSize.y - 26;
-
+		
 		m_isInAir = false;
 	}
 	else m_isInAir = true;
@@ -176,12 +176,37 @@ void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
 		opossum->Death();
 	}
 }
+void Player::CheckCollision(std::shared_ptr<Frog> frog)
+{
+	Vector2 pos = GetAnimation()->Get2DPosition();
+	Vector2 oPos = frog->GetAnimation()->Get2DPosition();
+	if (abs(oPos.y - pos.y) < 26) {
+		{
+			if (abs(pos.x - oPos.x) < 20) {
 
+				m_isAlive = false;
+
+			}
+			else {
+
+				m_isAlive = true;
+
+			}
+		}
+	}
+	else if (oPos.y - pos.y > 26 && oPos.y - pos.y < 40 && abs(pos.x - oPos.x) < 20)
+	{
+		ResourceManagers::GetInstance()->PlaySounds("hit", false);
+		m_ySpeed = -100;
+		score += frog->GetScore();
+		frog->Death();
+	}
+}
 void Player::CheckItem(std::shared_ptr<Item> item)
 {
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	Vector2 iPos = item->GetAnimation()->Get2DPosition();
-	if (sqrt((pos.x - iPos.x)*(pos.x - iPos.x) + (pos.y - iPos.y)) <= 20) {
+	if (sqrt((pos.x - iPos.x)*(pos.x - iPos.x) + (pos.y - iPos.y)*(pos.y - iPos.y)) <= 20) {
 		{
 			ResourceManagers::GetInstance()->PlaySounds("item", false);
 			score += item->GetScore();
@@ -210,7 +235,7 @@ void Player::Move(GLfloat deltatime)
 
 		if (m_isInAir) {
 
-			if (m_ySpeed < 350)
+			if (m_ySpeed < 400)
 			{
 				m_ySpeed += gravity;
 			}
@@ -237,7 +262,8 @@ void Player::Move(GLfloat deltatime)
 
 
 void Player::Update(GLfloat deltatime)
-{	
+{
+	
 	Move(deltatime);
 	GetAnimation()->Update(deltatime);
 	m_pAnimation->Set2DPosition(m_vPosition);

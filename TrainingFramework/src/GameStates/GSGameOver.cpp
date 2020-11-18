@@ -1,5 +1,9 @@
 #include "GSGameOver.h"
+#include <iostream>
+#include <string>
+#include <fstream>
 
+using namespace std;
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -9,12 +13,17 @@ extern int screenHeight;
 extern int screenWidth;
 extern int ySpeed;
 extern int score;
+extern int highScore[];
+
+
+
 GSGameOver::GSGameOver()
 {
 }
 
 GSGameOver::~GSGameOver()
 {
+	HighScore();
 	ResourceManagers::GetInstance()->PauseSounds("gameover");
 }
 
@@ -68,6 +77,30 @@ void GSGameOver::Init()
 	m_animation = std::make_shared<SpriteAnimation>(model, shader, texture, 2, 0.1);
 	m_animation->Set2DPosition(240, 180);
 	m_animation->SetSize(52, 52);
+}
+
+void GSGameOver::HighScore()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (score >= highScore[i])
+		{
+			int t = highScore[i];
+			highScore[i] = score;
+			score = t;
+		}
+	}
+
+	fstream f;                      // (2)
+	f.open("highscore.txt", ios::out); // (2)
+
+	for (int i = 0; i < 3; i++)
+	{
+
+		f << highScore[i] <<endl;
+	}                        // (3)
+
+	f.close();
 }
 
 void GSGameOver::Exit()
