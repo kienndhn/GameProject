@@ -66,6 +66,12 @@ void GSIntro::Init()
 	obj->Set2DPosition(100, 162);
 	m_listSprite.push_back(obj);
 
+	texture = ResourceManagers::GetInstance()->GetTexture("logo");
+	obj = std::make_shared<Sprite2D>(model, shader, texture);
+	obj->SetSize(62, 44);
+	obj->Set2DPosition(screenWidth * 0.5, 50);
+	m_listSprite.push_back(obj);
+
 	texture = ResourceManagers::GetInstance()->GetTexture("house");
 	obj = std::make_shared<Sprite2D>(model, shader, texture);
 	obj->SetSize(83, 108);
