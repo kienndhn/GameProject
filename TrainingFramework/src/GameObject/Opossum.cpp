@@ -88,7 +88,8 @@ void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
 	
 	if ((pos.y + 21 <= fPos.y - fSize.y * 0.5 + 11) && (pos.y + 21 >= fPos.y - fSize.y * 0.5) && abs(fPos.x - pos.x) < fSize.x * 0.5)
 	{
-		m_vPosition.y = fPos.y - 0.5 * fSize.y + 21;
+		m_vPosition.y = fPos.y - 0.5 * fSize.y - 21;
+		GetAnimation()->Set2DPosition(m_vPosition);
 		m_isInAir = false;
 	}
 
@@ -100,6 +101,7 @@ void Opossum::CheckFlatform(std::shared_ptr<Flatform> flatform)
 	{
 		m_isAlive = false;
 	}
+	
 }
 
 void Opossum::Move(GLfloat deltatime)

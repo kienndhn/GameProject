@@ -20,7 +20,7 @@ extern int screenHeight; //need get on Graphic engine
 extern int xSpeed;
 extern int ySpeed;
 extern int score;
-
+extern bool isMute;
 
 GSPlay::GSPlay()
 {
@@ -38,8 +38,11 @@ GSPlay::~GSPlay()
 
 void GSPlay::Init()
 {
+
 	xSpeed = 0;
 	score = 0;
+
+	ResourceManagers::GetInstance()->PlaySounds("play", true);
 
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("back");
@@ -96,7 +99,7 @@ void GSPlay::Init()
 	m_listButton.push_back(button);
 	texture = ResourceManagers::GetInstance()->GetTexture("button_play");button = std::make_shared<GameButton>(model, shader, texture);
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(400, 25);
+	button->Set2DPosition(350, 25);
 	button->SetActive(false);
 	button->SetOnClick([]()
 	{
@@ -106,14 +109,35 @@ void GSPlay::Init()
 	m_listButton.push_back(button);
 	texture = ResourceManagers::GetInstance()->GetTexture("button_pause"); button = std::make_shared<GameButton>(model, shader, texture);
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(400, 25);
+	button->Set2DPosition(350, 25);
 	button->SetOnClick([]()
 	{
 		GameStateMachine::GetInstance()->CurrentState()->Pause();
 	});
 	m_listButton.push_back(button);
-	ResourceManagers::GetInstance()->PlaySounds("play", true);
+	
+	//mute button
+	texture = ResourceManagers::GetInstance()->GetTexture("button_mute");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(400, 25);
+	button->SetActive(!isMute);
+	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
+		GameStateMachine::GetInstance()->CurrentState()->Mute();
+	});
+	m_listButton.push_back(button);
 
+	//sound button
+	texture = ResourceManagers::GetInstance()->GetTexture("button_sound");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(400, 25);
+	button->SetActive(isMute);
+	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
+		GameStateMachine::GetInstance()->CurrentState()->Sound();
+
+	});
+	m_listButton.push_back(button);
 	
 }
 
@@ -156,7 +180,7 @@ void GSPlay::HandleEvents()
 	}
 	
 	for (auto item : m_listItem) {
-		if (!item->ChechIsFed()) {
+		if (!item->ChechIsFed()&&item->CheckInScreen()) {
 			
 			m_Player->CheckItem(item);
 		
@@ -165,9 +189,9 @@ void GSPlay::HandleEvents()
 
 	for (auto op : m_listOpossum) 
 	{
-		if (op->CheckAlive())
+		if (op->CheckAlive()&& op->GetAcvite())
 		{
-			if (op->GetAcvite())
+			//if (op->GetAcvite())
 			{
 				m_Player->CheckCollision(op);
 
@@ -188,9 +212,9 @@ void GSPlay::HandleEvents()
 
 	for (auto op : m_listFrog)
 	{
-		if (op->CheckAlive())
+		if (op->CheckAlive()&& op->GetAcvite())
 		{
-			if (op->GetAcvite())
+			//if (op->GetAcvite())
 			{
 
 				m_Player->CheckCollision(op);
@@ -230,14 +254,16 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
-	printf("%f\n", deltaTime);
+	//printf("%f\n", deltaTime);
+	m_pHome->CheckInScreen();
+	if (m_pHome->GetIsInScreen()) {
+		if (CheckPass())
+		{
+			ResourceManagers::GetInstance()->PauseSounds("play");
 
-	if (CheckPass())
-	{
-		ResourceManagers::GetInstance()->PauseSounds("play");
-
-		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Done);
-	}
+			GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Done);
+		}
+	}	
 	if(!m_isPause)
 	{
 		m_score->setText("score " + std::to_string(score));
@@ -590,6 +616,9 @@ void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shad
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5650, 180, 32, 16);//
 	m_listFlatform.push_back(m_Ground);
 
+	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5900, 80, 32, 16);//
+	m_listFlatform.push_back(m_Ground);
+
 	//big floater
 	texture = ResourceManagers::GetInstance()->GetTexture("largefloater");
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 3300, 290, 112, 16);
@@ -612,6 +641,7 @@ void GSPlay::SetMap(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shad
 
 	m_Ground = std::make_shared<Flatform>(model, shader, texture, 5800, 240, 112, 16);
 	m_listFlatform.push_back(m_Ground);
+
 }
 
 void GSPlay::SetOpossum(std::shared_ptr<Models> model) {
@@ -691,11 +721,11 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 3500, 70);
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 3450, 200);
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 3450, 200);
+	//m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 3600, 70);
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 3600, 70);
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 3600, 150);
 	m_listFrog.push_back(m_pFrog);
@@ -703,9 +733,9 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 3700, 110);
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 3800, 0);
+	/*m_pFrog = std::make_shared<Frog>(model, 3800, 0);
 	m_listFrog.push_back(m_pFrog);
-	
+	*/
 	m_pFrog = std::make_shared<Frog>(model, 3800, 120);
 	m_listFrog.push_back(m_pFrog);
 
@@ -724,8 +754,8 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 4150, 100);//
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 4250, 150);//
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 4250, 150);//
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 4300, 30);//
 	m_listFrog.push_back(m_pFrog);
@@ -739,14 +769,14 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 4400, 200);//
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 4500, 70);//
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 4500, 70);//
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 4500, 190);//
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 4550, 250);//
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 4550, 250);//
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 4600, 210);//
 	m_listFrog.push_back(m_pFrog);
@@ -757,8 +787,8 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 4700, 40);//
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 4750, 150);//
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 4750, 150);//
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 4200, 110);//
 	m_listFrog.push_back(m_pFrog);
@@ -766,8 +796,8 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 	m_pFrog = std::make_shared<Frog>(model, 5200, 0);//
 	m_listFrog.push_back(m_pFrog);
 
-	m_pFrog = std::make_shared<Frog>(model, 5250, 220);//
-	m_listFrog.push_back(m_pFrog);
+	//m_pFrog = std::make_shared<Frog>(model, 5250, 220);//
+	//m_listFrog.push_back(m_pFrog);
 
 	m_pFrog = std::make_shared<Frog>(model, 5300, 00);//
 	m_listFrog.push_back(m_pFrog);
@@ -795,6 +825,24 @@ void GSPlay::SetFrog(std::shared_ptr<Models> model)
 
 	m_pFrog = std::make_shared<Frog>(model, 6200, 120);//
 	m_listFrog.push_back(m_pFrog);
+}
+
+void GSPlay::Mute()
+{
+	isMute = true;
+	/*ResourceManagers::GetInstance()->m_Soloud.setPauseAll(isMute);*/
+	ResourceManagers::GetInstance()->m_Soloud.setGlobalVolume(0);
+	m_listButton[3]->SetActive(!isMute);
+	m_listButton[4]->SetActive(isMute);
+}
+
+void GSPlay::Sound()
+{
+	isMute = false;
+	/*ResourceManagers::GetInstance()->m_Soloud.setPauseAll(isMute);*/
+	ResourceManagers::GetInstance()->m_Soloud.setGlobalVolume(1);
+	m_listButton[3]->SetActive(!isMute);
+	m_listButton[4]->SetActive(isMute);
 }
 
 void GSPlay::SetItem(std::shared_ptr<Models> model)

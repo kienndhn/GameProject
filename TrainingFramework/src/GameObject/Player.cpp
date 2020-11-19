@@ -5,7 +5,7 @@ Player::Player(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, s
 	: Sprite2D(model, shader, texture)
 {
 	m_isInAir = false;
-	m_xSpeed = 150;
+	m_xSpeed = 200;
 	m_ySpeed = -280;
 	m_isRight = true;
 	m_isAlive = true;
@@ -154,19 +154,20 @@ void Player::CheckCollision(std::shared_ptr<Opossum> opossum)
 {
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	Vector2 oPos = opossum->GetAnimation()->Get2DPosition();
-	if (oPos.y - pos.y < 26) {
-		{
-			if (abs(pos.x - oPos.x) < 45) {
+	if (oPos.y - pos.y < 26 && abs(pos.x - oPos.x) < 45)
+	{
 
-				m_isAlive = false;
+		m_isAlive = false;
+		/*if (abs(pos.x - oPos.x) < 45) {
 
-			}
-			else {
+			m_isAlive = false;
 
-				m_isAlive = true;
+		}*/
+		/*else {
 
-			}
-		}
+			m_isAlive = true;
+
+		}*/
 	}
 	else if (oPos.y - pos.y > 26 && oPos.y - pos.y < 35 && abs(pos.x - oPos.x) < 40)
 	{
@@ -180,20 +181,21 @@ void Player::CheckCollision(std::shared_ptr<Frog> frog)
 {
 	Vector2 pos = GetAnimation()->Get2DPosition();
 	Vector2 oPos = frog->GetAnimation()->Get2DPosition();
-	if (abs(oPos.y - pos.y) < 26) {
-		{
-			if (abs(pos.x - oPos.x) < 20) {
+	if (abs(oPos.y - pos.y) < 26 && abs(pos.x - oPos.x) < 20)
+	{
+		m_isAlive = false;
+		/*if (abs(pos.x - oPos.x) < 20) {
 
-				m_isAlive = false;
+			m_isAlive = false;
 
-			}
-			else {
+		}*/
+		/*else {
 
-				m_isAlive = true;
+			m_isAlive = true;
 
-			}
-		}
+		}*/
 	}
+	
 	else if (oPos.y - pos.y > 26 && oPos.y - pos.y < 40 && abs(pos.x - oPos.x) < 20)
 	{
 		ResourceManagers::GetInstance()->PlaySounds("hit", false);

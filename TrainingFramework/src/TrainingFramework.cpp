@@ -16,7 +16,7 @@ GLint ySpeed = 100;
 GLint gravity = 9;
 GLint score = 0;
 GLint highScore[3];
-
+bool isMute = false;
 
 void LoadHighScore()
 {

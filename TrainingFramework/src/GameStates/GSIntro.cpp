@@ -48,6 +48,11 @@ void GSIntro::Init()
 	m_animation->Set2DPosition(10, 182);
 	m_animation->SetSize(52, 52);
 
+	texture = ResourceManagers::GetInstance()->GetTexture("player_idle_left1");
+	m_animation1 = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	m_animation1->Set2DPosition(400, 182);
+	m_animation1->SetSize(52, 52);
+
 	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("largeground");
 	std::shared_ptr<Sprite2D> obj = std::make_shared<Sprite2D>(model, shader, texture);
@@ -99,11 +104,13 @@ void GSIntro::Update(float deltaTime)
 	pos.x += xSpeed * deltaTime;
 	m_animation->Set2DPosition(pos.x, pos.y);
 
-	if (pos.x >= 400) 
+	if (pos.x >= 390) 
 	{
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Menu);
 	}
 	m_animation->Update(deltaTime);
+
+	m_animation1->Update(deltaTime);
 
 	m_background->Update(deltaTime);
 
@@ -126,6 +133,7 @@ void GSIntro::Draw()
 		obj->Draw();
 	}
 	m_animation->Draw();
+	m_animation1->Draw();
 }
 
 void GSIntro::LoadHighScore()
@@ -173,4 +181,12 @@ void GSIntro::LoadHighScore()
 	{
 		printf("%d ", highScore[i]);
 	}
+}
+
+void GSIntro::Mute()
+{
+}
+
+void GSIntro::Sound()
+{
 }

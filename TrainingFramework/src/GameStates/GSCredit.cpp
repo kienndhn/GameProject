@@ -74,3 +74,11 @@ void GSCredit::Draw()
 	m_button->Draw();
 	m_text->Draw();
 }
+
+void GSCredit::Mute()
+{
+}
+
+void GSCredit::Sound()
+{
+}

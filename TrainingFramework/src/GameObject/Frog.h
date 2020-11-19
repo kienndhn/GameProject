@@ -66,7 +66,7 @@ public:
 	bool CheckInScreen()
 	{
 		Vector2 pos = GetAnimation()->Get2DPosition();
-		if (pos.x + 50 < 0 || pos.x - 50 > screenWidth)
+		if (pos.x + 25 < 0 || pos.x - 25 > screenWidth)
 		{
 			return false;
 		}

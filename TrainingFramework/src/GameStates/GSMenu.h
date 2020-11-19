@@ -29,11 +29,17 @@ public:
 	
 	void	Draw();
 
+	void	Mute();
+
+	void	Sound();
+
+	void	CheckSound();
+
 private:
 	
 	std::list<std::shared_ptr<Sprite2D>> m_listBackGround;
 	
-	std::list<std::shared_ptr<GameButton>> m_listButton;
+	std::vector<std::shared_ptr<GameButton>> m_listButton;
 
 	std::list<std::shared_ptr<SpriteAnimation>> m_listAnimation;
 

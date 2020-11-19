@@ -67,6 +67,11 @@ void GSHighScore::Init()
 	m_animation = std::make_shared<SpriteAnimation>(model, shader, texture, 2, 0.1);
 	m_animation->Set2DPosition(80, 182);
 	m_animation->SetSize(52, 52);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("frog_idle");
+	m_animation1 = std::make_shared<SpriteAnimation>(model, shader, texture, 4, 0.1);
+	m_animation1->Set2DPosition(400, 178);
+	m_animation1->SetSize(60, 60);
 }
 
 void GSHighScore::Exit()
@@ -101,6 +106,7 @@ void GSHighScore::HandleTouchEvents(int x, int y, bool bIsPressed)
 void GSHighScore::Update(float deltaTime)
 {
 	m_animation->Update(deltaTime);
+	m_animation1->Update(deltaTime);
 	for (auto it : m_background)
 	{
 		it->Update(deltaTime);
@@ -130,4 +136,13 @@ void GSHighScore::Draw()
 	m_textNo2->Draw();
 	m_textNo3->Draw();
 	m_animation->Draw();
+	m_animation1->Draw();
+}
+
+void GSHighScore::Mute()
+{
+}
+
+void GSHighScore::Sound()
+{
 }

@@ -14,7 +14,7 @@ extern int screenWidth;
 extern int ySpeed;
 extern int score;
 extern int highScore[];
-
+extern bool isMute;
 
 
 GSGameOver::GSGameOver()
@@ -29,7 +29,6 @@ GSGameOver::~GSGameOver()
 
 void GSGameOver::Init()
 {
-
 	ResourceManagers::GetInstance()->PlaySounds("gameover", true);
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
@@ -101,6 +100,14 @@ void GSGameOver::HighScore()
 	}                        // (3)
 
 	f.close();
+}
+
+void GSGameOver::Mute()
+{
+}
+
+void GSGameOver::Sound()
+{
 }
 
 void GSGameOver::Exit()

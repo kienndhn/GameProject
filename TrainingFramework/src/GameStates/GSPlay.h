@@ -57,6 +57,10 @@ public:
 		m_isPause = p;
 	}
 
+	void	Mute();
+
+	void	Sound();
+
 	std::vector<std::shared_ptr<GameButton>>	m_listButton;
 
 private:

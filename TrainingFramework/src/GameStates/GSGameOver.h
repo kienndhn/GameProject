@@ -22,6 +22,9 @@ public:
 	void	Update(float deltaTime);
 	void	Draw();
 	void	HighScore();
+	void	Mute();
+
+	void	Sound();
 private:
 	std::list<std::shared_ptr<GameButton>> m_listButton;
 	std::shared_ptr<Text> m_text;

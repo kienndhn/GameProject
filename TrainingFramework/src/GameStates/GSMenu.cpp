@@ -3,6 +3,7 @@
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
 extern int xSpeed;
+extern bool isMute;
 
 GSMenu::GSMenu()
 {
@@ -18,6 +19,7 @@ GSMenu::~GSMenu()
 
 void GSMenu::Init()
 {
+	
 	/*ResourceManagers::GetInstance()->PlaySounds("menu", true);*/
 
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
@@ -35,26 +37,51 @@ void GSMenu::Init()
 	texture = ResourceManagers::GetInstance()->GetTexture("button_play");
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 100);
+	button->Set2DPosition(screenWidth / 2, 160);
 	button->SetOnClick([]() {
 		ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Play);
 	});
 	m_listButton.push_back(button);
 
+	//mute button
+	texture = ResourceManagers::GetInstance()->GetTexture("button_mute");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, 220);
+	button->SetActive(!isMute);
+	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
+		GameStateMachine::GetInstance()->CurrentState()->Mute();
+	});
+	m_listButton.push_back(button);
+
+	//sound button
+	texture = ResourceManagers::GetInstance()->GetTexture("button_sound");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, 220);
+	button->SetActive(isMute);
+	button->SetOnClick([]() {
+		//ResourceManagers::GetInstance()->PauseSounds("menu");
+		GameStateMachine::GetInstance()->CurrentState()->Sound();
+		
+	});
+	m_listButton.push_back(button);
+
 	//info button
 	texture = ResourceManagers::GetInstance()->GetTexture("button_info");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 200);
+	button->Set2DPosition(screenWidth / 2 - 60, 220);
 	button->SetOnClick([]() {
 		//ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Credit);
 	});
 	m_listButton.push_back(button);
 
+
+	//high score
 	texture = ResourceManagers::GetInstance()->GetTexture("button_high");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 150);
+	button->Set2DPosition(screenWidth / 2 + 60, 220);
 	button->SetOnClick([]() {
 		//ResourceManagers::GetInstance()->PauseSounds("menu");
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_High);
@@ -64,7 +91,7 @@ void GSMenu::Init()
 	//exit button
 	texture = ResourceManagers::GetInstance()->GetTexture("button_quit");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 250);
+	button->Set2DPosition(screenWidth / 2, 280);
 	button->SetOnClick([]() {
 		exit(0);
 	});
@@ -124,6 +151,8 @@ void GSMenu::Init()
 	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("GAME");
 	m_Text_gameName = std::make_shared<Text>(shader, font, "Jumping Fox", TEXT_COLOR::RED, 2.0);
 	m_Text_gameName->Set2DPosition(Vector2(100, 50));
+
+
 }
 
 void GSMenu::Exit()
@@ -156,8 +185,10 @@ void GSMenu::HandleTouchEvents(int x, int y, bool bIsPressed)
 {
 	for (auto it : m_listButton)
 	{
-		(it)->HandleTouchEvents(x, y, bIsPressed);
-		if ((it)->IsHandle()) break;
+		if (it->GetActive()) {
+			(it)->HandleTouchEvents(x, y, bIsPressed);
+			if ((it)->IsHandle()) break;
+		}
 	}
 
 	
@@ -165,6 +196,8 @@ void GSMenu::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSMenu::Update(float deltaTime)
 {
+	CheckSound();
+
 	/*for (auto bg : m_listBackGround) {
 		Vector2 pos = bg->Get2DPosition();
 		pos.x = pos.x - 100 * deltaTime;
@@ -179,7 +212,10 @@ void GSMenu::Update(float deltaTime)
 
 	for (auto it : m_listButton)
 	{
-		it->Update(deltaTime);
+		if (it->GetActive())
+		{
+			it->Update(deltaTime);
+		}
 	}
 	for (auto it : m_listAnimation)
 	{
@@ -194,13 +230,41 @@ void GSMenu::Draw()
 	{
 		bg->Draw();
 	}
-	for (auto it : m_listButton)
+	for (auto obj : m_listButton)
 	{
-		it->Draw();
+		if (obj->GetActive())
+		{
+			obj->Draw();
+		}
 	}
 	m_Text_gameName->Draw();
 	for (auto it : m_listAnimation)
 	{
 		it->Draw();
 	}
+}
+
+void GSMenu::CheckSound()
+{
+	m_listButton[1]->SetActive(!isMute);
+	m_listButton[2]->SetActive(isMute);
+}
+
+void GSMenu::Mute()
+{
+
+	isMute = true;
+	/*ResourceManagers::GetInstance()->m_Soloud.setPauseAll(isMute);*/
+	ResourceManagers::GetInstance()->m_Soloud.setGlobalVolume(0);
+	m_listButton[1]->SetActive(!isMute);
+	m_listButton[2]->SetActive(isMute);
+}
+
+void GSMenu::Sound()
+{
+	isMute = false;
+	//ResourceManagers::GetInstance()->m_Soloud.setPauseAll(isMute);
+	ResourceManagers::GetInstance()->m_Soloud.setGlobalVolume(1);
+	m_listButton[1]->SetActive(!isMute);
+	m_listButton[2]->SetActive(isMute);
 }

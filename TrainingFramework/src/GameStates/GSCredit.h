@@ -20,6 +20,9 @@ public:
 	void	HandleTouchEvents(int x, int y, bool bIsPressed);
 	void	Update(float deltaTime);
 	void	Draw();
+	void	Mute();
+
+	void	Sound();
 
 private:
 	std::shared_ptr<GameButton> m_button;

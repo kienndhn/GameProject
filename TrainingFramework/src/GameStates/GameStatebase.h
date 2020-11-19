@@ -20,6 +20,8 @@ public:
 	virtual void HandleTouchEvents(int x, int y, bool bIsPressed) = 0;
 	virtual void Update(float deltaTime ) = 0;
 	virtual void Draw() = 0;
+	virtual void Mute() = 0;
+	virtual void Sound() = 0;
 	/*
 	void ChangeState(GameStateMachine* game, GameStateBase* state) {
 		game->ChangeState(state);
